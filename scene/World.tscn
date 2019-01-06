@@ -144,6 +144,8 @@ _sections_unfolded = [ "Light", "Shadow", "Transform" ]
 
 [node name="DemoTerrain" parent="." index="3" instance=ExtResource( 1 )]
 
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 2.46294, 0, 2.60688 )
+
 [node name="Camera" type="Camera" parent="." index="4"]
 
 transform = Transform( 0.707107, -0.454519, 0.541675, 0, 0.766044, 0.642788, -0.707107, -0.454519, 0.541675, 20, 20, 20 )
@@ -161,5 +163,28 @@ near = 0.05
 far = 100.0
 script = ExtResource( 2 )
 _sections_unfolded = [ "Transform" ]
+
+[node name="OmniLight" type="OmniLight" parent="." index="5"]
+
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 6.85905, 3.78071, 11.0539 )
+layers = 1
+light_color = Color( 1, 1, 1, 1 )
+light_energy = 9.89
+light_indirect_energy = 2.88
+light_negative = false
+light_specular = 0.5
+light_bake_mode = 1
+light_cull_mask = -1
+shadow_enabled = false
+shadow_color = Color( 0, 0, 0, 1 )
+shadow_bias = 0.15
+shadow_contact = 0.0
+shadow_reverse_cull_face = false
+editor_only = false
+omni_range = 5.0
+omni_attenuation = 1.0
+omni_shadow_mode = 1
+omni_shadow_detail = 1
+_sections_unfolded = [ "Light" ]
 
 

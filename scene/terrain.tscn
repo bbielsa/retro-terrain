@@ -4,18 +4,18 @@
 [ext_resource path="res://src/terrain/terrain.gd" type="Script" id=2]
 [ext_resource path="res://src/terrain/terrain_model.gd" type="Script" id=3]
 
-[sub_resource type="ShaderMaterial" id=3]
+[sub_resource type="ShaderMaterial" id=1]
 
 render_priority = 0
 shader = ExtResource( 1 )
 
-[sub_resource type="CubeMesh" id=1]
+[sub_resource type="CubeMesh" id=2]
 
-material = SubResource( 3 )
-size = Vector3( 10, 1, 10 )
-subdivide_width = 100
-subdivide_height = 100
-subdivide_depth = 100
+material = SubResource( 1 )
+size = Vector3( 10, 2, 10 )
+subdivide_width = 10
+subdivide_height = 10
+subdivide_depth = 0
 
 [node name="Terrain" type="Spatial" index="0"]
 
@@ -48,7 +48,7 @@ lod_min_distance = 0.0
 lod_min_hysteresis = 0.0
 lod_max_distance = 0.0
 lod_max_hysteresis = 0.0
-mesh = SubResource( 1 )
+mesh = SubResource( 2 )
 skeleton = NodePath("..")
 material/0 = null
 script = ExtResource( 2 )
