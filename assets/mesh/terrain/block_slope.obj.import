@@ -1,0 +1,20 @@
+[remap]
+
+importer="wavefront_obj"
+type="Mesh"
+path="res://.import/block_slope.obj-01f51ad59837783836bd3fb7363324df.mesh"
+
+[deps]
+
+files=[ "res://.import/block_slope.obj-01f51ad59837783836bd3fb7363324df.mesh" ]
+
+source_file="res://assets/mesh/terrain/block_slope.obj"
+source_md5="dcb5b7a69c4d61083fd9b0386e074644"
+
+dest_files=[ "res://.import/block_slope.obj-01f51ad59837783836bd3fb7363324df.mesh", "res://.import/block_slope.obj-01f51ad59837783836bd3fb7363324df.mesh" ]
+dest_md5="bffea67874b08319a903e5161e750785"
+
+[params]
+
+generate_tangents=true
+scale_mesh=Vector3( 1, 1, 1 )
