@@ -59,7 +59,7 @@ proximity_fade_enable = false
 distance_fade_enable = false
 _sections_unfolded = [ "Albedo" ]
 
-[node name="Terrain" type="Spatial"]
+[node name="Terrain" type="Spatial" index="0"]
 
 [node name="GridMap" type="GridMap" parent="." index="0"]
 
