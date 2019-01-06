@@ -6,10 +6,6 @@ uniform sampler2D tile_texture_2;
 uniform sampler2D tile_texture_3;
 uniform sampler2D tile_texture_4;
 
-void vertex() {
-	VERTEX.y += sin(TIME);	
-}
-
 void fragment() {
 	ALBEDO = COLOR.rgb;
 	
