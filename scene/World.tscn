@@ -167,6 +167,7 @@ _sections_unfolded = [ "Transform" ]
 [node name="OmniLight" type="OmniLight" parent="." index="5"]
 
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 6.85905, 3.78071, 11.0539 )
+visible = false
 layers = 1
 light_color = Color( 1, 1, 1, 1 )
 light_energy = 9.89
