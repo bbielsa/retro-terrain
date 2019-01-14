@@ -1,23 +1,18 @@
-[gd_scene load_steps=6 format=2]
+[gd_scene load_steps=5 format=2]
 
-[ext_resource path="res://src/shader/terrain/terrain.shader" type="Shader" id=1]
-[ext_resource path="res://src/terrain/terrain.gd" type="Script" id=2]
+[ext_resource path="res://src/terrain/terrain.gd" type="Script" id=1]
+[ext_resource path="res://src/shader/terrain/terrain.shader" type="Shader" id=2]
 [ext_resource path="res://src/terrain/terrain_model.gd" type="Script" id=3]
 
 [sub_resource type="ShaderMaterial" id=1]
 
 render_priority = 0
-shader = ExtResource( 1 )
-
-[sub_resource type="CubeMesh" id=2]
-
-material = SubResource( 1 )
-size = Vector3( 10, 2, 10 )
-subdivide_width = 10
-subdivide_height = 10
-subdivide_depth = 0
+shader = ExtResource( 2 )
+_sections_unfolded = [ "shader_param" ]
 
 [node name="Terrain" type="Spatial" index="0"]
+
+_sections_unfolded = [ "Transform" ]
 
 [node name="GridMap" type="GridMap" parent="." index="0"]
 
@@ -37,8 +32,9 @@ __meta__ = {
 "_editor_clip_": 0
 }
 
-[node name="Terrain" type="MeshInstance" parent="." index="1"]
+[node name="TerrainMeshInstance" type="MeshInstance" parent="." index="1"]
 
+transform = Transform( 2, 0, 0, 0, 2, 0, 0, 0, 2, 0, 0, 0 )
 layers = 1
 material_override = null
 cast_shadow = 1
@@ -48,14 +44,13 @@ lod_min_distance = 0.0
 lod_min_hysteresis = 0.0
 lod_max_distance = 0.0
 lod_max_hysteresis = 0.0
-mesh = SubResource( 2 )
+mesh = null
 skeleton = NodePath("..")
-material/0 = null
-script = ExtResource( 2 )
-_sections_unfolded = [ "Geometry", "material" ]
-terrain_material = null
+script = ExtResource( 1 )
+_sections_unfolded = [ "Transform" ]
+terrain_material = SubResource( 1 )
 
-[node name="TerrainModel" type="Spatial" parent="Terrain" index="0"]
+[node name="TerrainModel" type="Spatial" parent="TerrainMeshInstance" index="0"]
 
 script = ExtResource( 3 )
 
