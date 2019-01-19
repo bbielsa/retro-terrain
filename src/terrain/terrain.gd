@@ -1,3 +1,5 @@
+tool
+
 extends MeshInstance
 
 export(ShaderMaterial) var terrain_material = null
@@ -8,6 +10,13 @@ var mesh_tool
 
 var vertex_array
 var index_array
+
+const Corner = {
+	NORTH = Vector2(0, 0),
+	EAST = Vector2(1, 0),
+	WEST = Vector2(0, 1),
+	SOUTH = Vector2(1, 1)
+}
 
 func _ready():
 	generate_terrain()
@@ -20,11 +29,48 @@ func _ready():
 	mesh_tool.commit_to_surface(mesh)
 	
 	terrain_model.connect("terrain_changed", self, "_terrain_changed")
-	terrain_model.deform(4, 4, 3)
-	terrain_model.deform(4, 4, -2)
+#	terrain_model.deform(4, 4, 3)
+#	terrain_model.deform(4, 4, -2)
 
 	terrain_model.print_map()
+
+func _get_vertex_idx(tile_x, tile_y, corner):
+	if tile_y > 0:
+		var a = 0
+		
+	var width_tiles = terrain_model.map_dimension
+	var height_tiles = terrain_model.map_dimension
+	var width = width_tiles + 1
+	var height = height_tiles + 1
 	
+	var index = 0
+	
+	index += tile_x + corner.x
+	index += width * tile_y + corner.y * width
+	
+	return index
+
+func _get_middle_idx(tile_x, tile_y):
+	var width_tiles = terrain_model.map_dimension
+	var height_tiles = terrain_model.map_dimension
+	var width = width_tiles + 1
+	var height = height_tiles + 1
+	
+	# index into the middle vertex region of the vertex array
+	var middle_vertex_index = tile_x + tile_y * (width_tiles - 1)
+	
+	var index = width * height + middle_vertex_index
+	
+#	if tile_y == 1:
+#		index -= 1
+	
+	print(index)
+	
+	if index > 200:
+		print(vertex_array[index])
+	
+	return index
+
 func _generate_vertex_array():
 	var width_tiles = terrain_model.map_dimension
 	var height_tiles = terrain_model.map_dimension
@@ -53,21 +99,36 @@ func _generate_vertex_array():
 func _calculate_indices():
 	var width_tiles = terrain_model.map_dimension
 	var height_tiles = terrain_model.map_dimension
-	var i = 0
 	
 	index_array = PoolIntArray()
 	
-#	index_array.push_back(0)
-#	index_array.push_back(1)
-#	index_array.push_back(11)
-	
 	for y in range(height_tiles):
 		for x in range(width_tiles):
-			index_array.push_back(i)
-			index_array.push_back(i + 1)
-			index_array.push_back(width_tiles + 1 + i)
-
-			i += 1
+			var middle_idx = _get_middle_idx(x, y)
+			var north_idx = _get_vertex_idx(x, y, Corner.NORTH)
+			var south_idx = _get_vertex_idx(x, y, Corner.SOUTH)
+			var east_idx = _get_vertex_idx(x, y, Corner.EAST)
+			var west_idx = _get_vertex_idx(x, y, Corner.WEST)
+			
+			# triangle 1
+			index_array.push_back(north_idx)
+			index_array.push_back(east_idx)
+			index_array.push_back(middle_idx)
+			
+			# triangle 2
+			index_array.push_back(east_idx)
+			index_array.push_back(south_idx)
+			index_array.push_back(middle_idx)
+			
+			# triangle 3
+			index_array.push_back(south_idx)
+			index_array.push_back(west_idx)
+			index_array.push_back(middle_idx)
+			
+			# triangle 4
+			index_array.push_back(west_idx)
+			index_array.push_back(north_idx)
+			index_array.push_back(middle_idx)
 	
 func generate_terrain():
 	_generate_vertex_array()
@@ -82,8 +143,6 @@ func generate_terrain():
 	terrain_mesh.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, arrays)
 	
 	set_mesh(terrain_mesh)
-	
-#	set_mesh(surface_tool.commit())
 	
 func _terrain_changed(height_map):
 	print("_terrain_changed called, generating data texture")
