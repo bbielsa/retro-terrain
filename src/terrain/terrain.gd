@@ -61,14 +61,6 @@ func _get_middle_idx(tile_x, tile_y):
 	
 	var index = width * height + middle_vertex_index
 	
-#	if tile_y == 1:
-#		index -= 1
-	
-	print(index)
-	
-	if index > 200:
-		print(vertex_array[index])
-	
 	return index
 
 func _generate_vertex_array():
