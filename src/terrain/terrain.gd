@@ -9,7 +9,8 @@ func _ready():
 	generate_terrain()
 	
 	terrain_model.connect("terrain_changed", self, "_terrain_changed")
-	terrain_model.deform(4, 4, 1)
+	terrain_model.deform(4, 4, 3)
+	terrain_model.deform(4, 4, -2)
 
 	terrain_model.print_map()
 	
