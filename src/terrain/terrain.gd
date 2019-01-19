@@ -20,14 +20,13 @@ const Corner = {
 
 func _ready():
 	generate_terrain()
-	
+
 	mesh_tool = MeshDataTool.new()
 	mesh_tool.create_from_surface(mesh, 0)
 
 	mesh_tool.set_material(terrain_material)
-
 	mesh_tool.commit_to_surface(mesh)
-	
+
 	terrain_model.connect("terrain_changed", self, "_terrain_changed")
 #	terrain_model.deform(4, 4, 3)
 #	terrain_model.deform(4, 4, -2)

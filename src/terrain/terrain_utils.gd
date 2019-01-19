@@ -31,28 +31,28 @@ class TerrainUtils:
 		
 		return max(max(north, south), max(east, west))
 
-func get_middle_vertex_height(x, y):
-	var min_tile_height = get_min_tile_height(x, y)
-	var max_tile_height = get_max_tile_height(x, y)
-	var height_midpoint = (max_tile_height + min_tile_height) / 2.0
-	var raised_vertices = get_raised_vertices(x, y)
-
-	if raised_vertices == 1:
-		height_midpoint = min_tile_height
-	elif raised_vertices == 3:
-		height_midpoint = max_tile_height
-
-	return height_midpoint
+	func get_middle_vertex_height(x, y):
+		var min_tile_height = get_min_tile_height(x, y)
+		var max_tile_height = get_max_tile_height(x, y)
+		var height_midpoint = (max_tile_height + min_tile_height) / 2.0
+		var raised_vertices = get_raised_vertices(x, y)
 	
-func get_middle_vertex(x, y):
-	return Vector3(0, get_middle_vertex_height(x, y), 0) / 4
-
-func calculate_normal(vertex_1, vertex_2, vertex_3):
-	var edge_1 = vertex_2 - vertex_1
-	var edge_2 = vertex_3 - vertex_1
-	var normal = edge_1.cross(edge_2).normalized().abs()
+		if raised_vertices == 1:
+			height_midpoint = min_tile_height
+		elif raised_vertices == 3:
+			height_midpoint = max_tile_height
 	
-	return normal
-
-func get_vertex_height(x, y):		
-	return Vector3(0, terrain_model.get_vertex_height(x, y), 0) / 4
+		return height_midpoint
+		
+	func get_middle_vertex(x, y):
+		return Vector3(0, get_middle_vertex_height(x, y), 0) / 4
+	
+	func calculate_normal(vertex_1, vertex_2, vertex_3):
+		var edge_1 = vertex_2 - vertex_1
+		var edge_2 = vertex_3 - vertex_1
+		var normal = edge_1.cross(edge_2).normalized().abs()
+		
+		return normal
+	
+	func get_vertex_height(x, y):		
+		return Vector3(0, terrain_model.get_vertex_height(x, y), 0) / 4
