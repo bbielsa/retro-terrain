@@ -4,9 +4,20 @@ export(ShaderMaterial) var terrain_material = null
 
 onready var terrain_model = get_node("TerrainModel")
 var terrain_shader
+var mesh_tool
+
+var vertex_array
+var index_array
 
 func _ready():
 	generate_terrain()
+	
+	mesh_tool = MeshDataTool.new()
+	mesh_tool.create_from_surface(mesh, 0)
+
+	mesh_tool.set_material(terrain_material)
+
+	mesh_tool.commit_to_surface(mesh)
 	
 	terrain_model.connect("terrain_changed", self, "_terrain_changed")
 	terrain_model.deform(4, 4, 3)
@@ -14,97 +25,65 @@ func _ready():
 
 	terrain_model.print_map()
 	
-func generate_terrain():
-	var surface = SurfaceTool.new()
+func _generate_vertex_array():
+	var width_tiles = terrain_model.map_dimension
+	var height_tiles = terrain_model.map_dimension
+	var width = width_tiles + 1
+	var height = height_tiles + 1
+	var middle_vertices = width_tiles * height_tiles
 	
-	surface.begin(Mesh.PRIMITIVE_TRIANGLES)
+	var vertices_size = width * height + middle_vertices
+	var vertices = PoolVector3Array()
+	vertices.resize(vertices_size)
 	
-	for y in range(terrain_model.map_dimension):
-		for x in range(terrain_model.map_dimension):
-			add_tile(surface, x, y)
+	var i = 0
+	
+	for y in range(height):
+		for x in range(width):
+			vertices[i] = Vector3(x, 0, y)
+			i += 1
 			
-	surface.generate_normals()
-	surface.index()
-	surface.set_material(terrain_material)
+	for y in range(height_tiles):
+		for x in range(width_tiles):
+			vertices[i] = Vector3(x + 0.5, 0, y + 0.5)
+			i += 1
+			
+	vertex_array = vertices
 	
-	set_mesh(surface.commit())
+func _calculate_indices():
+	var width_tiles = terrain_model.map_dimension
+	var height_tiles = terrain_model.map_dimension
+	var i = 0
 	
-func add_tile(surface, x, y):
-	var offset = Vector3(x, 0, y)
+	index_array = PoolIntArray()
 	
-	var a = offset
-	var b = offset + Vector3(1, 0, 0)
-	var c = offset + Vector3(1, 0, 1)
-	var d = offset + Vector3(0, 0, 1)
-	var e = offset + Vector3(0.5, 0, 0.5)
+#	index_array.push_back(0)
+#	index_array.push_back(1)
+#	index_array.push_back(11)
 	
-	var outer = Vector2(0, 0)
-	var inner = Vector2(1, 1)
+	for y in range(height_tiles):
+		for x in range(width_tiles):
+			index_array.push_back(i)
+			index_array.push_back(i + 1)
+			index_array.push_back(width_tiles + 1 + i)
+
+			i += 1
 	
-#	abe, bce, cde, dae
-	surface.add_uv2(outer)
-	surface.add_vertex(a)
-	surface.add_vertex(b)
-	surface.add_uv2(inner)
-	surface.add_vertex(e)
+func generate_terrain():
+	_generate_vertex_array()
+	_calculate_indices()
 	
-#	surface.add_uv(Vector2(1, 0))
-	surface.add_uv2(outer)
-	surface.add_vertex(b)
-	surface.add_vertex(c)
-	surface.add_uv2(inner)
-	surface.add_vertex(e)
+	var arrays = []
+	arrays.resize(9)
+	arrays[Mesh.ARRAY_VERTEX] = vertex_array
+	arrays[Mesh.ARRAY_INDEX] = index_array
 	
-#	surface.add_uv(Vector2(0, 1))
-	surface.add_uv2(outer)
-	surface.add_vertex(c)
-	surface.add_vertex(d)
-	surface.add_uv2(inner)
-	surface.add_vertex(e)
+	var terrain_mesh = ArrayMesh.new()
+	terrain_mesh.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, arrays)
 	
-#	surface.add_uv(Vector2(1, 1))
-	surface.add_uv2(outer)
-	surface.add_vertex(d)
-	surface.add_vertex(a)
-	surface.add_uv2(inner)
-	surface.add_vertex(e)
+	set_mesh(terrain_mesh)
+	
+#	set_mesh(surface_tool.commit())
 	
 func _terrain_changed(height_map):
 	print("_terrain_changed called, generating data texture")
-	
-	var height_map_texture = generate_height_map_texture(height_map)
-	var shader = terrain_material.shader
-	
-	set_texture_param(shader, "height_map", height_map_texture)
-	
-func set_texture_param(shader, name, texture):
-	shader.set_default_texture_param(name, texture)	
-	
-func height_to_pixel(height):
-	return Color(height / 255.0, 0, 0)
-	
-func generate_height_map_texture(height_map):
-	var image_data = generate_height_map_image_data(height_map)
-	var texture = ImageTexture.new()
-	
-	texture.create_from_image(image_data, 0)
-
-	return texture
-	
-func generate_height_map_image_data(height_map):
-	var map_dimension_vertices = terrain_model.map_dimension + 1
-	var image_data = Image.new()
-	
-	image_data.create(map_dimension_vertices, map_dimension_vertices, false, 2)
-	image_data.lock()
-	
-	for y in range(map_dimension_vertices):
-		for x in range(map_dimension_vertices):
-			var height = terrain_model.get_vertex_height(x, y)
-			var pixel = height_to_pixel(height)
-			
-			image_data.set_pixel(x, y, pixel)
-			
-	image_data.unlock()
-	
-	return image_data

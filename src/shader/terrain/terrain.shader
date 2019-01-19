@@ -41,13 +41,13 @@ float get_middle_height(vec2 middle_vertex) {
 }
 
 void vertex() {
-	float height = get_height(VERTEX.xz);
-	bool middle_vertex = VERTEX.x - floor(VERTEX.x) > 0.0;
-	
-	if(middle_vertex)
-		VERTEX.y = height + get_middle_height(VERTEX.xz);
-	else
-		VERTEX.y = height;	
+//	float height = get_height(VERTEX.xz);
+//	bool middle_vertex = VERTEX.x - floor(VERTEX.x) > 0.0;
+//
+//	if(middle_vertex)
+//		VERTEX.y = height + get_middle_height(VERTEX.xz);
+//	else
+//		VERTEX.y = height;	
 }
 
 void fragment() {

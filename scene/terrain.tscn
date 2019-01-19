@@ -1,14 +1,7 @@
-[gd_scene load_steps=5 format=2]
+[gd_scene load_steps=3 format=2]
 
 [ext_resource path="res://src/terrain/terrain.gd" type="Script" id=1]
-[ext_resource path="res://src/shader/terrain/terrain.shader" type="Shader" id=2]
-[ext_resource path="res://src/terrain/terrain_model.gd" type="Script" id=3]
-
-[sub_resource type="ShaderMaterial" id=1]
-
-render_priority = 0
-shader = ExtResource( 2 )
-_sections_unfolded = [ "shader_param" ]
+[ext_resource path="res://src/terrain/terrain_model.gd" type="Script" id=2]
 
 [node name="Terrain" type="Spatial" index="0"]
 
@@ -48,10 +41,10 @@ mesh = null
 skeleton = NodePath("..")
 script = ExtResource( 1 )
 _sections_unfolded = [ "Transform" ]
-terrain_material = SubResource( 1 )
+terrain_material = null
 
 [node name="TerrainModel" type="Spatial" parent="TerrainMeshInstance" index="0"]
 
-script = ExtResource( 3 )
+script = ExtResource( 2 )
 
 
