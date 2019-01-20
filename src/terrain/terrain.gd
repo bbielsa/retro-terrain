@@ -40,7 +40,7 @@ func _ready():
 		
 	
 	var old = mesh_tool.get_vertex(150)
-	mesh_tool.set_vertex(150, old + Vector3(0, 0.25, 0))
+	mesh_tool.set_vertex(150, old + Vector3(0, 1, 0))
 	
 	print(old)
 	
@@ -75,11 +75,12 @@ func _get_middle_idx(tile_x, tile_y):
 	var height = height_tiles + 1
 	
 	# index into the middle vertex region of the vertex array
-	var middle_vertex_index = tile_x + tile_y * (width_tiles - 1)
+	var middle_vertex_index = tile_x + tile_y * width_tiles
 	
 	var index = width * height + middle_vertex_index
 	
-	return index - 1
+	
+	return index
 
 func _generate_vertex_array():
 	var width_tiles = terrain_model.map_dimension
@@ -108,9 +109,6 @@ func _generate_vertex_array():
 			
 	for y in range(height_tiles):
 		for x in range(width_tiles):
-			if i == 150:
-				x = 4
-				y = 4
 			vertices[i] = Vector3(x + 0.5, 0, y + 0.5)
 			uv2s[i] = inner
 			i += 1
@@ -126,11 +124,22 @@ func _calculate_indices():
 	
 	for y in range(height_tiles):
 		for x in range(width_tiles):
-			var middle_idx = _get_middle_idx(x, y)
+			var middle_idx = _get_middle_idx(x, y)			
 			var north_idx = _get_vertex_idx(x, y, Corner.NORTH)
 			var south_idx = _get_vertex_idx(x, y, Corner.SOUTH)
 			var east_idx = _get_vertex_idx(x, y, Corner.EAST)
 			var west_idx = _get_vertex_idx(x, y, Corner.WEST)
+			
+			# N        E
+			#  |------|
+			#  |\  1 /|
+			#  | \  / |
+			#  |4 \/ 2|
+			#  |  /\  |
+			#  | / 3\ |
+			#  |/____\|
+			# W        S
+			
 			
 			# triangle 1
 			index_array.push_back(north_idx)
@@ -168,6 +177,9 @@ func generate_terrain():
 	terrain_mesh.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, arrays)
 	
 	set_mesh(terrain_mesh)
+	
+func _deform_terrain(vertices):
+	
 	
 func _terrain_changed(height_map):
 	print("_terrain_changed called, generating data texture")

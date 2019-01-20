@@ -58,10 +58,10 @@ void fragment() {
 		NORMAL = normalize(cross(dFdx(VERTEX), dFdy(VERTEX)));
 
 	ALBEDO = vec3(39.0 / 256.0, 174.0 / 256.0, 96.0 / 256.0);
-//
-//	if (UV2.x < 0.04) {
-//		ALBEDO *= 0.8;
-//	}
+
+	if (UV2.x < 0.04) {
+		ALBEDO *= 0.8;
+	}
 
 //	ALBEDO = vec3(UV2.r * 255.0);
 }
