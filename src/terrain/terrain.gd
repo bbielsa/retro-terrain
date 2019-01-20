@@ -130,6 +130,7 @@ func _calculate_indices():
 			var east_idx = _get_vertex_idx(x, y, Corner.EAST)
 			var west_idx = _get_vertex_idx(x, y, Corner.WEST)
 			
+			#
 			# N        E
 			#  |------|
 			#  |\  1 /|
@@ -139,7 +140,7 @@ func _calculate_indices():
 			#  | / 3\ |
 			#  |/____\|
 			# W        S
-			
+			#
 			
 			# triangle 1
 			index_array.push_back(north_idx)
@@ -179,7 +180,7 @@ func generate_terrain():
 	set_mesh(terrain_mesh)
 	
 func _deform_terrain(vertices):
-	
+	pass
 	
 func _terrain_changed(height_map):
 	print("_terrain_changed called, generating data texture")
