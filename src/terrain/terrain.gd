@@ -12,6 +12,7 @@ var mesh_tool
 var vertex_array
 var index_array
 var uv2_array
+var uv_array
 
 const Corner = {
 	NORTH = Vector2(0, 0),
@@ -31,7 +32,8 @@ func _ready():
 	mesh_tool.commit_to_surface(mesh)
 
 	terrain_model.connect("terrain_changed", self, "_terrain_changed")
-	terrain_model.deform(4, 4, 2)
+#	terrain_model.deform(4, 4, 3)
+	
 	terrain_model.deform(4, 4, 1)
 	terrain_model.deform(6, 6, 1)
 	terrain_model.deform(6, 5, 1)
@@ -83,9 +85,20 @@ func _generate_vertex_array():
 	var vertices_size = width * height + middle_vertices
 	var vertices = PoolVector3Array()
 	var uv2s = PoolVector2Array()
+	var uvs = PoolVector2Array()
 	
 	vertices.resize(vertices_size)
 	uv2s.resize(vertices_size)
+	uvs.resize(vertices_size)
+	
+	var dim = terrain_model.map_dimension
+	
+	var north_corner_idx = _get_vertex_idx(0, 0, Corner.NORTH)
+	var south_corner_idx = _get_vertex_idx(dim, dim, Corner.SOUTH)
+	
+	uvs[north_corner_idx] = Vector2(1, 1)
+	uvs[south_corner_idx] = Vector2(1, 1)
+	
 	
 	var i = 0
 	
@@ -103,9 +116,31 @@ func _generate_vertex_array():
 			vertices[i] = Vector3(x + 0.5, 0, y + 0.5)
 			uv2s[i] = inner
 			i += 1
+
+#	for y in range(height_tiles):
+#		for x in range(width_tiles):
+#			var north_idx = _get_vertex_idx(x, y, Corner.NORTH)
+#			var south_idx = _get_vertex_idx(x + 1, y + 1, Corner.SOUTH)
+#			var east_idx = _get_vertex_idx(x + 1, y, Corner.EAST)
+#			var west_idx = _get_vertex_idx(x, y + 1, Corner.WEST)
+#			var middle_idx = _get_middle_idx(x, y)
+#
+#			uvs[north_idx] = Corner.SOUTH * Vector2(x, y)
+#			uvs[south_idx] = Corner.NORTH * Vector2(x, y)
+#			uvs[east_idx] = Corner.EAST * Vector2(x, y)
+#			uvs[west_idx] = Corner.WEST * Vector2(x, y)
+#			uvs[middle_idx] = Vector2(0.5, 0.5) * Vector2(x, y)
+#
+#			print(north_idx)
+#			print(south_idx)
+#			print(east_idx)
+#			print(west_idx)
+	
+	
 			
 	vertex_array = vertices
 	uv2_array = uv2s
+	uv_array = uvs
 	
 func _calculate_indices():
 	var width_tiles = terrain_model.map_dimension
@@ -163,6 +198,7 @@ func generate_terrain():
 	
 	arrays[Mesh.ARRAY_VERTEX] = vertex_array
 	arrays[Mesh.ARRAY_INDEX] = index_array
+	arrays[Mesh.ARRAY_TEX_UV] = uv_array
 	arrays[Mesh.ARRAY_TEX_UV2] = uv2_array
 	
 	var terrain_mesh = ArrayMesh.new()
@@ -178,6 +214,7 @@ func _vector2_with_height(vector, height):
 	
 func _terrain_changed(height_map):
 	print("_terrain_changed called, generating data texture")
+	terrain_model.print_map()
 	
 	var dimension = terrain_model.map_dimension
 	var height = dimension

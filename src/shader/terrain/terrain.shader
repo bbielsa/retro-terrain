@@ -51,19 +51,18 @@ shader_type spatial;
 //		VERTEX.y = height;	
 //}
 
-void fragment() {
-//	bool middle_vertex = VERTEX.x - floor(VERTEX.x) > 0.0;
-//
-//	if(middle_vertex)
-		NORMAL = normalize(cross(dFdx(VERTEX), dFdy(VERTEX)));
 
+
+void fragment() {
+	NORMAL = normalize(cross(dFdx(VERTEX), dFdy(VERTEX)));
 	ALBEDO = vec3(39.0 / 256.0, 174.0 / 256.0, 96.0 / 256.0);
 
-	if (UV2.x < 0.04) {
-		ALBEDO *= 0.8;
-	}
+//	ALBEDO = vec3(UV.x / 10.0, 0.0, UV.y / 10.0);
 
-//	ALBEDO = vec3(UV2.r * 255.0);
+//	ALBEDO = vec3(modf(SCREEN_UV.x, 10.0), 0.0, modf(SCREEN_UV.y, 10.0));
+	
+
+//	ALBEDO = vec3(UV.x * 2.0, 0.0, UV.y * 2.0);
 }
 
 
