@@ -1,8 +1,9 @@
-[gd_scene load_steps=6 format=2]
+[gd_scene load_steps=7 format=2]
 
 [ext_resource path="res://src/terrain/terrain.gd" type="Script" id=1]
 [ext_resource path="res://src/shader/terrain/terrain.shader" type="Shader" id=2]
 [ext_resource path="res://src/terrain/terrain_model.gd" type="Script" id=3]
+[ext_resource path="res://src/terrain/terrain_utils.gd" type="Script" id=4]
 
 [sub_resource type="ArrayMesh" id=1]
 
@@ -69,5 +70,9 @@ terrain_material = SubResource( 2 )
 [node name="TerrainModel" type="Spatial" parent="TerrainMeshInstance" index="0"]
 
 script = ExtResource( 3 )
+
+[node name="TerrainUtils" type="Spatial" parent="TerrainMeshInstance" index="1"]
+
+script = ExtResource( 4 )
 
 
