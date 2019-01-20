@@ -1,4 +1,12 @@
-extends Node
+tool
+
+extends Spatial
+
+
+onready var terrain_model = get_node("../TerrainModel")
+
+func _ready():
+	print(terrain_model)
 
 func get_raised_vertices(x, y):
 	var north_height = terrain_model.get_vertex_relative(x, y, 0, 0)
@@ -54,6 +62,9 @@ func calculate_normal(vertex_1, vertex_2, vertex_3):
 	var normal = edge_1.cross(edge_2).normalized().abs()
 	
 	return normal
+	
+func get_vertex_height_with_vector2(vector):
+	return terrain_model.get_vertex_height(vector.x, vector.y)
 
 func get_vertex_height(x, y):		
 	return Vector3(0, terrain_model.get_vertex_height(x, y), 0) / 4
