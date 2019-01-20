@@ -28,14 +28,14 @@ func _ready():
 	mesh_tool.create_from_surface(mesh, 0)
 
 	mesh_tool.set_material(terrain_material)
+	mesh_tool.commit_to_surface(mesh)
 
-	
 
 	terrain_model.connect("terrain_changed", self, "_terrain_changed")
 	terrain_model.deform(4, 4, 2)
 	terrain_model.deform(4, 4, -1)
 	
-	mesh_tool.commit_to_surface(mesh)
+	
 	
 #	terrain_model.deform(4, 4, 1)
 #	terrain_model.deform(6, 6, 1)
@@ -224,6 +224,7 @@ func _terrain_changed(height_map):
 	var width = dimension
 	
 #	mesh_tool.create_from_surface(mesh, 0)
+#	mesh_tool.set_material(terrain_material)
 	
 	for y in range(height):
 		for x in range(width):
@@ -267,5 +268,7 @@ func _terrain_changed(height_map):
 			mesh_tool.set_vertex(west_idx, new_west_vertex)
 			mesh_tool.set_vertex(middle_idx, new_middle_vertex)
 			
-#	mesh_tool.commit_to_surface(mesh)
+	
+	mesh_tool.commit_to_surface(self.mesh)
+	set_mesh(mesh)
 	print(" ")

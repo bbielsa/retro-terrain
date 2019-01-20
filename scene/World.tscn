@@ -147,7 +147,7 @@ _sections_unfolded = [ "Light", "Shadow", "Transform" ]
 
 [node name="DemoTerrain" parent="." index="3" instance=ExtResource( 2 )]
 
-transform = Transform( 0.5, 0, 0, 0, 0.5, 0, 0, 0, 0.5, 0, 0, 0 )
+transform = Transform( 2, 0, 0, 0, 1, 0, 0, 0, 2, 0, 0, 0 )
 
 [node name="Camera" type="Camera" parent="." index="4"]
 
