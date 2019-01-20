@@ -88,7 +88,7 @@ surfaces/5 = {
 "vertex_count": 221
 }
 
-[node name="Terrain" type="Spatial" index="0"]
+[node name="Terrain" type="Spatial"]
 
 script = ExtResource( 1 )
 _sections_unfolded = [ "Transform" ]

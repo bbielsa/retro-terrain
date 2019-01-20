@@ -32,8 +32,8 @@ func _ready():
 	
 
 	terrain_model.connect("terrain_changed", self, "_terrain_changed")
-	terrain_model.deform(4, 4, 3)
-	terrain_model.deform(4, 4, -2)
+	terrain_model.deform(4, 4, 2)
+	terrain_model.deform(4, 4, -1)
 	
 	mesh_tool.commit_to_surface(mesh)
 	
