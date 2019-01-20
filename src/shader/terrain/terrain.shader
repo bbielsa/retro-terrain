@@ -52,9 +52,9 @@ shader_type spatial;
 //}
 
 void fragment() {
-	bool middle_vertex = VERTEX.x - floor(VERTEX.x) > 0.0;
-
-	if(middle_vertex)
+//	bool middle_vertex = VERTEX.x - floor(VERTEX.x) > 0.0;
+//
+//	if(middle_vertex)
 		NORMAL = normalize(cross(dFdx(VERTEX), dFdy(VERTEX)));
 
 	ALBEDO = vec3(39.0 / 256.0, 174.0 / 256.0, 96.0 / 256.0);
