@@ -1,3 +1,5 @@
+tool
+
 extends Spatial
 
 signal terrain_changed(vertex_map)
@@ -33,7 +35,7 @@ func get_absolute_vertex_relative(x, y, dx, dy):
 func deform(x, y, delta_height):
 	var direction = 1 if delta_height > 0 else -1
 	var times = abs(delta_height)
-
+	
 	for i in range(times):
 		var height = vertex_height[y][x]
 		vertex_height[y][x] = height + direction

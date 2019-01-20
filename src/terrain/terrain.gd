@@ -1,110 +1,220 @@
+tool
+
 extends MeshInstance
 
 export(ShaderMaterial) var terrain_material = null
 
 onready var terrain_model = get_node("TerrainModel")
+onready var terrain_utils = get_node("TerrainUtils")
 var terrain_shader
+var mesh_tool
+
+var vertex_array
+var index_array
+var uv2_array
+
+const Corner = {
+	NORTH = Vector2(0, 0),
+	EAST = Vector2(1, 0),
+	WEST = Vector2(0, 1),
+	SOUTH = Vector2(1, 1)
+}
 
 func _ready():
 	generate_terrain()
-	
+
+	mesh_tool = MeshDataTool.new()
+	mesh_tool.create_from_surface(mesh, 0)
+
+	mesh_tool.set_material(terrain_material)
+
+	mesh_tool.commit_to_surface(mesh)
+
 	terrain_model.connect("terrain_changed", self, "_terrain_changed")
-	terrain_model.deform(4, 4, 3)
-	terrain_model.deform(4, 4, -2)
+	terrain_model.deform(4, 4, 2)
+	terrain_model.deform(4, 4, 1)
+	terrain_model.deform(6, 6, 1)
+	terrain_model.deform(6, 5, 1)
+	terrain_model.deform(5, 6, 1)
+	
+#	terrain_model.deform(4, 4, 1)
+#	terrain_model.deform(3, 3, 1)
+#	terrain_model.deform(3, 4, 1)
+#	terrain_model.deform(4, 3, 1)
+	
 
 	terrain_model.print_map()
+
+func _get_vertex_idx(tile_x, tile_y, corner):
+	if tile_y > 0:
+		var a = 0
+		
+	var width_tiles = terrain_model.map_dimension
+	var height_tiles = terrain_model.map_dimension
+	var width = width_tiles + 1
+	var height = height_tiles + 1
 	
-func generate_terrain():
-	var surface = SurfaceTool.new()
+	var index = 0
 	
-	surface.begin(Mesh.PRIMITIVE_TRIANGLES)
+	index += tile_x + corner.x
+	index += width * tile_y + corner.y * width
 	
-	for y in range(terrain_model.map_dimension):
-		for x in range(terrain_model.map_dimension):
-			add_tile(surface, x, y)
-			
-	surface.generate_normals()
-	surface.index()
-	surface.set_material(terrain_material)
+	return index
+
+func _get_middle_idx(tile_x, tile_y):
+	var width_tiles = terrain_model.map_dimension
+	var height_tiles = terrain_model.map_dimension
+	var width = width_tiles + 1
+	var height = height_tiles + 1
 	
-	set_mesh(surface.commit())
+	# index into the middle vertex region of the vertex array
+	var middle_vertex_index = tile_x + tile_y * width_tiles
+	var index = width * height + middle_vertex_index
 	
-func add_tile(surface, x, y):
-	var offset = Vector3(x, 0, y)
+	return index
+
+func _generate_vertex_array():
+	var width_tiles = terrain_model.map_dimension
+	var height_tiles = terrain_model.map_dimension
+	var width = width_tiles + 1
+	var height = height_tiles + 1
+	var middle_vertices = width_tiles * height_tiles
 	
-	var a = offset
-	var b = offset + Vector3(1, 0, 0)
-	var c = offset + Vector3(1, 0, 1)
-	var d = offset + Vector3(0, 0, 1)
-	var e = offset + Vector3(0.5, 0, 0.5)
+	var vertices_size = width * height + middle_vertices
+	var vertices = PoolVector3Array()
+	var uv2s = PoolVector2Array()
+	
+	vertices.resize(vertices_size)
+	uv2s.resize(vertices_size)
+	
+	var i = 0
 	
 	var outer = Vector2(0, 0)
 	var inner = Vector2(1, 1)
 	
-#	abe, bce, cde, dae
-	surface.add_uv2(outer)
-	surface.add_vertex(a)
-	surface.add_vertex(b)
-	surface.add_uv2(inner)
-	surface.add_vertex(e)
+	for y in range(height):
+		for x in range(width):
+			vertices[i] = Vector3(x, 0, y)
+			uv2s[i] = outer
+			i += 1
+			
+	for y in range(height_tiles):
+		for x in range(width_tiles):
+			vertices[i] = Vector3(x + 0.5, 0, y + 0.5)
+			uv2s[i] = inner
+			i += 1
+			
+	vertex_array = vertices
+	uv2_array = uv2s
 	
-#	surface.add_uv(Vector2(1, 0))
-	surface.add_uv2(outer)
-	surface.add_vertex(b)
-	surface.add_vertex(c)
-	surface.add_uv2(inner)
-	surface.add_vertex(e)
+func _calculate_indices():
+	var width_tiles = terrain_model.map_dimension
+	var height_tiles = terrain_model.map_dimension
 	
-#	surface.add_uv(Vector2(0, 1))
-	surface.add_uv2(outer)
-	surface.add_vertex(c)
-	surface.add_vertex(d)
-	surface.add_uv2(inner)
-	surface.add_vertex(e)
+	index_array = PoolIntArray()
 	
-#	surface.add_uv(Vector2(1, 1))
-	surface.add_uv2(outer)
-	surface.add_vertex(d)
-	surface.add_vertex(a)
-	surface.add_uv2(inner)
-	surface.add_vertex(e)
+	for y in range(height_tiles):
+		for x in range(width_tiles):
+			var middle_idx = _get_middle_idx(x, y)			
+			var north_idx = _get_vertex_idx(x, y, Corner.NORTH)
+			var south_idx = _get_vertex_idx(x, y, Corner.SOUTH)
+			var east_idx = _get_vertex_idx(x, y, Corner.EAST)
+			var west_idx = _get_vertex_idx(x, y, Corner.WEST)
+			
+			#
+			# N        E
+			#  |------|
+			#  |\  1 /|
+			#  | \  / |
+			#  |4 \/ 2|
+			#  |  /\  |
+			#  | / 3\ |
+			#  |/____\|
+			# W        S
+			#
+			
+			# triangle 1
+			index_array.push_back(north_idx)
+			index_array.push_back(east_idx)
+			index_array.push_back(middle_idx)
+			
+			# triangle 2
+			index_array.push_back(east_idx)
+			index_array.push_back(south_idx)
+			index_array.push_back(middle_idx)
+			
+			# triangle 3
+			index_array.push_back(south_idx)
+			index_array.push_back(west_idx)
+			index_array.push_back(middle_idx)
+			
+			# triangle 4
+			index_array.push_back(west_idx)
+			index_array.push_back(north_idx)
+			index_array.push_back(middle_idx)
+
+func generate_terrain():
+	_generate_vertex_array()
+	_calculate_indices()
+	
+	var arrays = []
+	
+	arrays.resize(Mesh.ARRAY_MAX)
+	
+	arrays[Mesh.ARRAY_VERTEX] = vertex_array
+	arrays[Mesh.ARRAY_INDEX] = index_array
+	arrays[Mesh.ARRAY_TEX_UV2] = uv2_array
+	
+	var terrain_mesh = ArrayMesh.new()
+	terrain_mesh.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, arrays)
+	
+	set_mesh(terrain_mesh)
+	
+func _deform_terrain(vertices):
+	pass
+	
+func _vector2_with_height(vector, height):
+	return Vector3(vector.x, height / 2.0, vector.y)
 	
 func _terrain_changed(height_map):
 	print("_terrain_changed called, generating data texture")
 	
-	var height_map_texture = generate_height_map_texture(height_map)
-	var shader = terrain_material.shader
+	var dimension = terrain_model.map_dimension
+	var height = dimension
+	var width = dimension
 	
-	set_texture_param(shader, "height_map", height_map_texture)
-	
-func set_texture_param(shader, name, texture):
-	shader.set_default_texture_param(name, texture)	
-	
-func height_to_pixel(height):
-	return Color(height / 255.0, 0, 0)
-	
-func generate_height_map_texture(height_map):
-	var image_data = generate_height_map_image_data(height_map)
-	var texture = ImageTexture.new()
-	
-	texture.create_from_image(image_data, 0)
+	for y in range(height):
+		for x in range(width):
+			var tile_vertex = Vector2(x, y)
+			
+			var north_vertex = tile_vertex
+			var east_vertex = tile_vertex + Corner.EAST
+			var west_vertex = tile_vertex + Corner.WEST
+			var south_vertex = tile_vertex + Corner.SOUTH
+			var middle_vertex = tile_vertex + Vector2(0.5, 0.5)
 
-	return texture
-	
-func generate_height_map_image_data(height_map):
-	var map_dimension_vertices = terrain_model.map_dimension + 1
-	var image_data = Image.new()
-	
-	image_data.create(map_dimension_vertices, map_dimension_vertices, false, 2)
-	image_data.lock()
-	
-	for y in range(map_dimension_vertices):
-		for x in range(map_dimension_vertices):
-			var height = terrain_model.get_vertex_height(x, y)
-			var pixel = height_to_pixel(height)
+			var north_height = terrain_utils.get_vertex_height_with_vector2(north_vertex)
+			var east_height = terrain_utils.get_vertex_height_with_vector2(east_vertex)
+			var west_height = terrain_utils.get_vertex_height_with_vector2(west_vertex)
+			var south_height = terrain_utils.get_vertex_height_with_vector2(south_vertex)
+			var middle_height = terrain_utils.get_middle_vertex_height(x, y)
 			
-			image_data.set_pixel(x, y, pixel)
+			var new_north_vertex = _vector2_with_height(north_vertex, north_height)
+			var new_east_vertex = _vector2_with_height(east_vertex, east_height)
+			var new_west_vertex = _vector2_with_height(west_vertex, west_height)
+			var new_south_vertex = _vector2_with_height(south_vertex, south_height)
+			var new_middle_vertex = _vector2_with_height(middle_vertex, middle_height)
 			
-	image_data.unlock()
-	
-	return image_data
+			var middle_idx = _get_middle_idx(x, y)			
+			var north_idx = _get_vertex_idx(x, y, Corner.NORTH)
+			var south_idx = _get_vertex_idx(x, y, Corner.SOUTH)
+			var east_idx = _get_vertex_idx(x, y, Corner.EAST)
+			var west_idx = _get_vertex_idx(x, y, Corner.WEST)
+		
+			mesh_tool.set_vertex(north_idx, new_north_vertex)
+			mesh_tool.set_vertex(south_idx, new_south_vertex)
+			mesh_tool.set_vertex(east_idx, new_east_vertex)
+			mesh_tool.set_vertex(west_idx, new_west_vertex)
+			mesh_tool.set_vertex(middle_idx, new_middle_vertex)
+			
+	mesh_tool.commit_to_surface(mesh)

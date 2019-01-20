@@ -1,17 +1,36 @@
-[gd_scene load_steps=5 format=2]
+[gd_scene load_steps=9 format=2]
 
-[ext_resource path="res://src/terrain/terrain.gd" type="Script" id=1]
-[ext_resource path="res://src/shader/terrain/terrain.shader" type="Shader" id=2]
-[ext_resource path="res://src/terrain/terrain_model.gd" type="Script" id=3]
+[ext_resource path="res://src/terrain/terrain_controller.gd" type="Script" id=1]
+[ext_resource path="res://src/terrain/terrain_gridmap.gd" type="Script" id=2]
+[ext_resource path="res://src/terrain/terrain.gd" type="Script" id=3]
+[ext_resource path="res://src/shader/terrain/terrain.shader" type="Shader" id=4]
+[ext_resource path="res://src/terrain/terrain_model.gd" type="Script" id=5]
+[ext_resource path="res://src/terrain/terrain_utils.gd" type="Script" id=6]
 
-[sub_resource type="ShaderMaterial" id=1]
+[sub_resource type="ArrayMesh" id=1]
+
+blend_shape_mode = 1
+custom_aabb = AABB( 0, 0, 0, 0, 0, 0 )
+surfaces/0 = {
+"aabb": AABB( 0, 0, 0, 0, 0, 0 ),
+"array_data": PoolByteArray(  ),
+"array_index_data": PoolByteArray(  ),
+"blend_shape_data": [  ],
+"format": 0,
+"index_count": 0,
+"primitive": 7,
+"skeleton_aabb": [  ],
+"vertex_count": 0
+}
+
+[sub_resource type="ShaderMaterial" id=2]
 
 render_priority = 0
-shader = ExtResource( 2 )
-_sections_unfolded = [ "shader_param" ]
+shader = ExtResource( 4 )
 
 [node name="Terrain" type="Spatial" index="0"]
 
+script = ExtResource( 1 )
 _sections_unfolded = [ "Transform" ]
 
 [node name="GridMap" type="GridMap" parent="." index="0"]
@@ -28,6 +47,7 @@ collision_mask = 1
 data = {
 "cells": PoolIntArray(  )
 }
+script = ExtResource( 2 )
 __meta__ = {
 "_editor_clip_": 0
 }
@@ -44,14 +64,19 @@ lod_min_distance = 0.0
 lod_min_hysteresis = 0.0
 lod_max_distance = 0.0
 lod_max_hysteresis = 0.0
-mesh = null
+mesh = SubResource( 1 )
 skeleton = NodePath("..")
-script = ExtResource( 1 )
+material/0 = null
+script = ExtResource( 3 )
 _sections_unfolded = [ "Transform" ]
-terrain_material = SubResource( 1 )
+terrain_material = SubResource( 2 )
 
 [node name="TerrainModel" type="Spatial" parent="TerrainMeshInstance" index="0"]
 
-script = ExtResource( 3 )
+script = ExtResource( 5 )
+
+[node name="TerrainUtils" type="Spatial" parent="TerrainMeshInstance" index="1"]
+
+script = ExtResource( 6 )
 
 
