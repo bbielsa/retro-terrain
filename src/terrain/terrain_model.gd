@@ -1,3 +1,5 @@
+tool
+
 extends Spatial
 
 signal terrain_changed(vertex_map)

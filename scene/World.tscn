@@ -7,7 +7,7 @@
 
 background_mode = 1
 background_sky_custom_fov = 0.0
-background_color = Color( 1, 1, 1, 1 )
+background_color = Color( 0, 0, 0, 1 )
 background_energy = 1.0
 background_canvas_max_layer = 0
 ambient_light_color = Color( 0, 0, 0, 1 )
