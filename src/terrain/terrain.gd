@@ -29,23 +29,23 @@ func _ready():
 
 	mesh_tool.set_material(terrain_material)
 
-	mesh_tool.commit_to_surface(mesh)
+	
 
 	terrain_model.connect("terrain_changed", self, "_terrain_changed")
-#	terrain_model.deform(4, 4, 3)
+	terrain_model.deform(4, 4, 3)
+	terrain_model.deform(4, 4, -2)
 	
-	terrain_model.deform(4, 4, 1)
-	terrain_model.deform(6, 6, 1)
-	terrain_model.deform(6, 5, 1)
-	terrain_model.deform(5, 6, 1)
+	mesh_tool.commit_to_surface(mesh)
+	
+#	terrain_model.deform(4, 4, 1)
+#	terrain_model.deform(6, 6, 1)
+#	terrain_model.deform(6, 5, 1)
+#	terrain_model.deform(5, 6, 1)
 	
 #	terrain_model.deform(4, 4, 1)
 #	terrain_model.deform(3, 3, 1)
 #	terrain_model.deform(3, 4, 1)
 #	terrain_model.deform(4, 3, 1)
-	
-
-	terrain_model.print_map()
 
 func _get_vertex_idx(tile_x, tile_y, corner):
 	if tile_y > 0:
@@ -212,13 +212,18 @@ func _deform_terrain(vertices):
 func _vector2_with_height(vector, height):
 	return Vector3(vector.x, height / 2.0, vector.y)
 	
+func _get_height_with_vector2(vector):
+	return terrain_model.get_vertex_height(vector.x, vector.y)
+	
 func _terrain_changed(height_map):
-	print("_terrain_changed called, generating data texture")
+	print("_terrain_changed called, modifying terrain")
 	terrain_model.print_map()
 	
 	var dimension = terrain_model.map_dimension
 	var height = dimension
 	var width = dimension
+	
+#	mesh_tool.create_from_surface(mesh, 0)
 	
 	for y in range(height):
 		for x in range(width):
@@ -230,10 +235,10 @@ func _terrain_changed(height_map):
 			var south_vertex = tile_vertex + Corner.SOUTH
 			var middle_vertex = tile_vertex + Vector2(0.5, 0.5)
 
-			var north_height = terrain_utils.get_vertex_height_with_vector2(north_vertex)
-			var east_height = terrain_utils.get_vertex_height_with_vector2(east_vertex)
-			var west_height = terrain_utils.get_vertex_height_with_vector2(west_vertex)
-			var south_height = terrain_utils.get_vertex_height_with_vector2(south_vertex)
+			var north_height = _get_height_with_vector2(north_vertex)
+			var east_height = _get_height_with_vector2(east_vertex)
+			var west_height = _get_height_with_vector2(west_vertex)
+			var south_height = _get_height_with_vector2(south_vertex)
 			var middle_height = terrain_utils.get_middle_vertex_height(x, y)
 			
 			var new_north_vertex = _vector2_with_height(north_vertex, north_height)
@@ -248,10 +253,19 @@ func _terrain_changed(height_map):
 			var east_idx = _get_vertex_idx(x, y, Corner.EAST)
 			var west_idx = _get_vertex_idx(x, y, Corner.WEST)
 		
+			if x == 4 && y == 4:
+				var test = height_map[y][x]
+				north_height = test
+				
+				print("4,4 height: ", test)
+				print("new_north:  ", new_north_vertex)
+				print("north_idx:  ", north_idx)
+		
 			mesh_tool.set_vertex(north_idx, new_north_vertex)
 			mesh_tool.set_vertex(south_idx, new_south_vertex)
 			mesh_tool.set_vertex(east_idx, new_east_vertex)
 			mesh_tool.set_vertex(west_idx, new_west_vertex)
 			mesh_tool.set_vertex(middle_idx, new_middle_vertex)
 			
-	mesh_tool.commit_to_surface(mesh)
+#	mesh_tool.commit_to_surface(mesh)
+	print(" ")

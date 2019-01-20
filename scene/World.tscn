@@ -83,16 +83,17 @@ adjustment_contrast = 1.0
 adjustment_saturation = 1.0
 _sections_unfolded = [ "Background" ]
 
-[node name="World" type="Spatial" index="0"]
+[node name="World" type="Spatial"]
 
 _sections_unfolded = [ "Transform" ]
 
 [node name="GridMap" type="GridMap" parent="." index="0"]
 
+transform = Transform( 2, 0, 0, 0, 1, 0, 0, 0, 2, 0, 0, 0 )
 visible = false
 theme = ExtResource( 1 )
-cell_size = Vector3( 1, 1, 1 )
-cell_octant_size = 4
+cell_size = Vector3( 2, 1, 2 )
+cell_octant_size = 8
 cell_center_x = true
 cell_center_y = true
 cell_center_z = true
@@ -145,6 +146,8 @@ directional_shadow_max_distance = 200.0
 _sections_unfolded = [ "Light", "Shadow", "Transform" ]
 
 [node name="DemoTerrain" parent="." index="3" instance=ExtResource( 2 )]
+
+transform = Transform( 0.5, 0, 0, 0, 0.5, 0, 0, 0, 0.5, 0, 0, 0 )
 
 [node name="Camera" type="Camera" parent="." index="4"]
 

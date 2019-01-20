@@ -82,6 +82,7 @@ func initialize_vertex_array():
 	emit_signal("terrain_changed", vertex_height)
 			
 func print_map():
+	print("---------------------")
 	for y in range(map_dimension + 1):
 		var row = ""
 		for x in range(map_dimension + 1):
