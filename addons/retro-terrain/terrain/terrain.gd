@@ -30,22 +30,7 @@ func _ready():
 	mesh_tool.set_material(terrain_material)
 	mesh_tool.commit_to_surface(mesh)
 
-
 	terrain_model.connect("terrain_changed", self, "_terrain_changed")
-	terrain_model.deform(4, 4, 4)
-	terrain_model.deform(4, 4, -3)
-	
-	
-	
-
-	terrain_model.deform(6, 6, 1)
-	terrain_model.deform(6, 5, 1)
-	terrain_model.deform(5, 6, 1)
-	
-#	terrain_model.deform(4, 4, 1)
-#	terrain_model.deform(3, 3, 1)
-#	terrain_model.deform(3, 4, 1)
-#	terrain_model.deform(4, 3, 1)
 
 func _get_vertex_idx(tile_x, tile_y, corner):
 	if tile_y > 0:
