@@ -1,8 +1,7 @@
-[gd_scene load_steps=5 format=2]
+[gd_scene load_steps=4 format=2]
 
-[ext_resource path="res://scene/world_theme.meshlib" type="MeshLibrary" id=1]
-[ext_resource path="res://scene/terrain.tscn" type="PackedScene" id=2]
-[ext_resource path="res://src/camera/camera.gd" type="Script" id=3]
+[ext_resource path="res://demo/src/camera/camera.gd" type="Script" id=1]
+[ext_resource path="res://addons/retro-terrain/scene/terrain.tscn" type="PackedScene" id=2]
 
 [sub_resource type="Environment" id=1]
 
@@ -91,7 +90,7 @@ _sections_unfolded = [ "Transform" ]
 
 transform = Transform( 2, 0, 0, 0, 1, 0, 0, 0, 2, 0, 0, 0 )
 visible = false
-theme = ExtResource( 1 )
+theme = null
 cell_size = Vector3( 2, 1, 2 )
 cell_octant_size = 8
 cell_center_x = true
@@ -108,15 +107,7 @@ __meta__ = {
 "_editor_clip_": 0
 }
 
-[node name="Terrain" type="Spatial" parent="." index="1"]
-
-editor/display_folded = true
-transform = Transform( 0.4, 0, 0, 0, 0.4, 0, 0, 0, 0.4, 0, 0, 0 )
-_sections_unfolded = [ "Transform", "Visibility" ]
-
-[node name="TerrainModel" type="Spatial" parent="Terrain" index="0"]
-
-[node name="DirectionalLight" type="DirectionalLight" parent="." index="2"]
+[node name="DirectionalLight" type="DirectionalLight" parent="." index="1"]
 
 transform = Transform( -0.707107, -0.5, 0.5, 0, 0.707107, 0.707107, -0.707107, 0.5, -0.5, 0, 37.7711, 0 )
 layers = 1
@@ -144,11 +135,7 @@ directional_shadow_depth_range = 0
 directional_shadow_max_distance = 200.0
 _sections_unfolded = [ "Light", "Shadow", "Transform" ]
 
-[node name="DemoTerrain" parent="." index="3" instance=ExtResource( 2 )]
-
-transform = Transform( 2, 0, 0, 0, 1, 0, 0, 0, 2, -15, 0, -15 )
-
-[node name="Camera" type="Camera" parent="." index="4"]
+[node name="Camera" type="Camera" parent="." index="2"]
 
 transform = Transform( 0.707107, -0.454519, 0.541675, 0, 0.766044, 0.642788, -0.707107, -0.454519, 0.541675, 20, 20, 20 )
 keep_aspect = 1
@@ -163,7 +150,9 @@ fov = 70.0
 size = 48.0
 near = 0.05
 far = 100.0
-script = ExtResource( 3 )
+script = ExtResource( 1 )
 _sections_unfolded = [ "Transform" ]
+
+[node name="Terrain" parent="." index="3" instance=ExtResource( 2 )]
 
 
