@@ -32,12 +32,12 @@ func _ready():
 
 
 	terrain_model.connect("terrain_changed", self, "_terrain_changed")
-	terrain_model.deform(4, 4, 3)
-	terrain_model.deform(4, 4, -1)
+	terrain_model.deform(4, 4, 4)
+	terrain_model.deform(4, 4, -3)
 	
 	
 	
-	terrain_model.deform(4, 4, 1)
+
 	terrain_model.deform(6, 6, 1)
 	terrain_model.deform(6, 5, 1)
 	terrain_model.deform(5, 6, 1)
