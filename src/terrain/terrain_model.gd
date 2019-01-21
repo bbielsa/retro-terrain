@@ -4,7 +4,7 @@ extends Spatial
 
 signal terrain_changed(vertex_map)
 
-var map_dimension = 10 # number of tiles, vertices will be map_dimension + 1
+var map_dimension = 64 # number of tiles, vertices will be map_dimension + 1
 var vertex_height = []
 
 # The maximum height can be from -16 to 16 units

@@ -112,7 +112,6 @@ __meta__ = {
 
 editor/display_folded = true
 transform = Transform( 0.4, 0, 0, 0, 0.4, 0, 0, 0, 0.4, 0, 0, 0 )
-visible = false
 _sections_unfolded = [ "Transform", "Visibility" ]
 
 [node name="TerrainModel" type="Spatial" parent="Terrain" index="0"]
@@ -147,7 +146,7 @@ _sections_unfolded = [ "Light", "Shadow", "Transform" ]
 
 [node name="DemoTerrain" parent="." index="3" instance=ExtResource( 2 )]
 
-transform = Transform( 2, 0, 0, 0, 1, 0, 0, 0, 2, 0, 0, 0 )
+transform = Transform( 2, 0, 0, 0, 1, 0, 0, 0, 2, -15, 0, -15 )
 
 [node name="Camera" type="Camera" parent="." index="4"]
 
