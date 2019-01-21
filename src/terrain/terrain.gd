@@ -32,15 +32,15 @@ func _ready():
 
 
 	terrain_model.connect("terrain_changed", self, "_terrain_changed")
-	terrain_model.deform(4, 4, 2)
+	terrain_model.deform(4, 4, 3)
 	terrain_model.deform(4, 4, -1)
 	
 	
 	
-#	terrain_model.deform(4, 4, 1)
-#	terrain_model.deform(6, 6, 1)
-#	terrain_model.deform(6, 5, 1)
-#	terrain_model.deform(5, 6, 1)
+	terrain_model.deform(4, 4, 1)
+	terrain_model.deform(6, 6, 1)
+	terrain_model.deform(6, 5, 1)
+	terrain_model.deform(5, 6, 1)
 	
 #	terrain_model.deform(4, 4, 1)
 #	terrain_model.deform(3, 3, 1)
@@ -222,10 +222,7 @@ func _terrain_changed(height_map):
 	var dimension = terrain_model.map_dimension
 	var height = dimension
 	var width = dimension
-	
-#	mesh_tool.create_from_surface(mesh, 0)
-#	mesh_tool.set_material(terrain_material)
-	
+
 	for y in range(height):
 		for x in range(width):
 			var tile_vertex = Vector2(x, y)
@@ -253,22 +250,17 @@ func _terrain_changed(height_map):
 			var south_idx = _get_vertex_idx(x, y, Corner.SOUTH)
 			var east_idx = _get_vertex_idx(x, y, Corner.EAST)
 			var west_idx = _get_vertex_idx(x, y, Corner.WEST)
-		
-			if x == 4 && y == 4:
-				var test = height_map[y][x]
-				north_height = test
-				
-				print("4,4 height: ", test)
-				print("new_north:  ", new_north_vertex)
-				print("north_idx:  ", north_idx)
-		
+
 			mesh_tool.set_vertex(north_idx, new_north_vertex)
 			mesh_tool.set_vertex(south_idx, new_south_vertex)
 			mesh_tool.set_vertex(east_idx, new_east_vertex)
 			mesh_tool.set_vertex(west_idx, new_west_vertex)
 			mesh_tool.set_vertex(middle_idx, new_middle_vertex)
-			
-	
+
 	mesh_tool.commit_to_surface(self.mesh)
-	set_mesh(mesh)
+	
+	for surface_idx in range(mesh.get_surface_count()):
+		mesh.surface_remove(surface_idx)
+	
+	print("surfaces ", mesh.get_surface_count())
 	print(" ")
