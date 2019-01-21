@@ -1,13 +1,24 @@
 extends Camera
 
-# class member variables go here, for example:
-# var a = 2
-# var b = "textvar"
+
+var should_trace = true
+var mouse_pos = null
 
 func _ready():
-	# Called every time the node is added to the scene.
-	# Initialization here
 	pass
+
+func _physics_process(delta):
+	if not should_trace || not mouse_pos:
+		return
+	
+	var ray_length = 1000
+
+	var from = self.project_ray_origin(mouse_pos)
+	var to = from + self.project_ray_normal(mouse_pos) * ray_length
+
+	print(from, " -> ", to)
+	
+	should_trace = false
 
 func _input(event):
 	if not event is InputEventMouseButton:
@@ -16,14 +27,5 @@ func _input(event):
 	if event.pressed:
 		return
 	
-	var ray_length = 1000
-	var pos = event.position
-	var from = self.project_ray_origin(event.position)
-	var to = from + self.project_ray_normal(event.position) * ray_length
-	
-	print(to)
-
-#func _process(delta):
-#	# Called every frame. Delta is time since last frame.
-#	# Update game logic here.
-#	pass
+	mouse_pos = event.position
+	should_trace = true
