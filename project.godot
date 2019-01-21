@@ -11,7 +11,7 @@ config_version=3
 [application]
 
 config/name="DeformableTerrain"
-run/main_scene="res://scene/World.tscn"
+run/main_scene="res://demo/scene/World.tscn"
 config/icon="res://icon.png"
 
 [display]
@@ -22,4 +22,4 @@ window/dpi/allow_hidpi=true
 
 [rendering]
 
-environment/default_environment="res://default_env.tres"
+environment/default_environment="res://demo/default_env.tres"
