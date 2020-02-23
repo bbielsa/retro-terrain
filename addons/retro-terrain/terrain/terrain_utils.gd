@@ -53,8 +53,6 @@ func get_middle_vertex_height(x, y):
 		height_midpoint = min_tile_height
 	elif raised_vertices == 3:
 		height_midpoint = max_tile_height
-	elif raised_vertices == 2:
-		height_midpoint = 0
 
 	return height_midpoint
 	

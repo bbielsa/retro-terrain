@@ -5,6 +5,7 @@ var should_trace = true
 var mouse_pos = null
 
 func _ready():
+	print(Vector3(0, 0, 0).normalized())
 	pass
 
 func _physics_process(delta):

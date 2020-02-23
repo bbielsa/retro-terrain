@@ -31,6 +31,10 @@ func _ready():
 	mesh_tool.commit_to_surface(mesh)
 
 	terrain_model.connect("terrain_changed", self, "_terrain_changed")
+	connect("input_event", self, "_on_area_input_event")
+
+func _on_area_input_event(camera, event, click_pos, click_normal, shape_idx):
+	print("Clicked on mesh!")
 
 func _get_vertex_idx(tile_x, tile_y, corner):
 	if tile_y > 0:
@@ -201,8 +205,8 @@ func _get_height_with_vector2(vector):
 	return terrain_model.get_vertex_height(vector.x, vector.y)
 	
 func _terrain_changed(height_map):
-	print("_terrain_changed called, modifying terrain")
-	terrain_model.print_map()
+#	print("_terrain_changed called, modifying terrain")
+#	terrain_model.print_map()
 	
 	var dimension = terrain_model.map_dimension
 	var height = dimension
@@ -242,10 +246,13 @@ func _terrain_changed(height_map):
 			mesh_tool.set_vertex(west_idx, new_west_vertex)
 			mesh_tool.set_vertex(middle_idx, new_middle_vertex)
 
-	mesh_tool.commit_to_surface(self.mesh)
-	
 	for surface_idx in range(mesh.get_surface_count()):
 		mesh.surface_remove(surface_idx)
+		
+	mesh_tool.commit_to_surface(self.mesh)
 	
-	print("surfaces ", mesh.get_surface_count())
-	print(" ")
+	mesh.surface_remove(1)
+	
+#	print("surfaces ", mesh.get_surface_count())
+#	print(get_aabb())
+#	print(" ")
