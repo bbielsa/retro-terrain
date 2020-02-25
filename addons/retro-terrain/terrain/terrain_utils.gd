@@ -53,8 +53,6 @@ func get_middle_vertex_height(x, y):
 		height_midpoint = min_tile_height
 	elif raised_vertices == 3:
 		height_midpoint = max_tile_height
-	elif raised_vertices == 2:
-		height_midpoint = 0
 
 	return height_midpoint
 	
@@ -73,3 +71,4 @@ func get_vertex_height_with_vector2(vector):
 
 func get_vertex_height(x, y):		
 	return Vector3(0, terrain_model.get_vertex_height(x, y), 0) / 4
+	
