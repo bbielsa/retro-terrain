@@ -71,3 +71,4 @@ func get_vertex_height_with_vector2(vector):
 
 func get_vertex_height(x, y):		
 	return Vector3(0, terrain_model.get_vertex_height(x, y), 0) / 4
+	

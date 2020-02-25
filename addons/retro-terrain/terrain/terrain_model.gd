@@ -4,7 +4,7 @@ extends Spatial
 
 signal terrain_changed(vertex_map)
 
-onready var terrain_controller = get_node("../..")
+onready var terrain_controller = get_node("../../..")
 
 onready var map_dimension = terrain_controller.map_size # number of tiles, vertices will be map_dimension + 1
 var vertex_height = []

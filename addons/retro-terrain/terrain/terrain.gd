@@ -6,6 +6,8 @@ export(ShaderMaterial) var terrain_material = null
 
 onready var terrain_model = get_node("TerrainModel")
 onready var terrain_utils = get_node("TerrainUtils")
+onready var terrain_shape = get_node("../TerrainCollisionShape")
+
 var terrain_shader
 var mesh_tool
 
@@ -30,6 +32,8 @@ func _ready():
 	mesh_tool.set_material(terrain_material)
 	mesh_tool.commit_to_surface(mesh)
 
+	terrain_shape.shape = mesh.create_trimesh_shape()
+
 	terrain_model.connect("terrain_changed", self, "_terrain_changed")
 	connect("input_event", self, "_on_area_input_event")
 
@@ -49,6 +53,19 @@ func _get_vertex_idx(tile_x, tile_y, corner):
 	
 	index += tile_x + corner.x
 	index += width * tile_y + corner.y * width
+	
+	return index
+
+func get_vertex_idx_from_pos(pos):
+	var width_tiles = terrain_model.map_dimension
+	var height_tiles = terrain_model.map_dimension
+	var width = width_tiles + 1
+	var height = height_tiles + 1
+	
+	var index = 0
+	
+	index += pos.x
+	index += width * pos.y
 	
 	return index
 
@@ -239,6 +256,15 @@ func _terrain_changed(height_map):
 			var south_idx = _get_vertex_idx(x, y, Corner.SOUTH)
 			var east_idx = _get_vertex_idx(x, y, Corner.EAST)
 			var west_idx = _get_vertex_idx(x, y, Corner.WEST)
+			
+			
+#			terrain_utils.get_vertex_id_from_pos(x, y)
+			
+#			print(middle_idx)
+			print(north_idx)
+			print(south_idx)
+			print(east_idx)
+			print(west_idx)
 
 			mesh_tool.set_vertex(north_idx, new_north_vertex)
 			mesh_tool.set_vertex(south_idx, new_south_vertex)
@@ -248,8 +274,10 @@ func _terrain_changed(height_map):
 
 	for surface_idx in range(mesh.get_surface_count()):
 		mesh.surface_remove(surface_idx)
-		
+
 	mesh_tool.commit_to_surface(self.mesh)
+	
+	terrain_shape.shape = mesh.create_trimesh_shape()
 	
 	mesh.surface_remove(1)
 	
