@@ -279,7 +279,7 @@ func _terrain_changed(height_map):
 	
 	terrain_shape.shape = mesh.create_trimesh_shape()
 	
-	mesh.surface_remove(1)
+#	mesh.surface_remove(1)
 	
 #	print("surfaces ", mesh.get_surface_count())
 #	print(get_aabb())
