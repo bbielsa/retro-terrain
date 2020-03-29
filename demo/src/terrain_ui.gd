@@ -8,7 +8,7 @@ onready var height_value_label = get_node("CenterContainer/VBoxContainer/HBoxCon
 func _ready():
 	terrain_controller.connect("input_terrain_event", self, "_on_input_terrain")
 
-func _update_gui(camera, mouse_pos):
+func _update_gui(camera, mouse_pos, vertex_pos):
 	var height = mouse_pos.y
 	var screen_pos = camera.unproject_position(mouse_pos)
 	
@@ -30,8 +30,4 @@ func _on_input_terrain(camera, event, mouse_pos, mouse_normal, shape_idx, vertex
 	if event is InputEventMouseButton:
 		_modify_terrain(camera, event, mouse_pos, vertex_pos)
 	elif event is InputEventMouseMotion:
-		_update_gui(camera, mouse_pos)
-	
-
-	
-
+		_update_gui(camera, mouse_pos, vertex_pos)
