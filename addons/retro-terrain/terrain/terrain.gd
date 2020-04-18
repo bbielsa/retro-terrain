@@ -212,9 +212,6 @@ func generate_terrain():
 	
 	set_mesh(terrain_mesh)
 	
-func _deform_terrain(vertices):
-	pass
-	
 func _vector2_with_height(vector, height):
 	return Vector3(vector.x, height / 2.0, vector.y)
 	
@@ -272,10 +269,11 @@ func _terrain_changed(height_map):
 			mesh_tool.set_vertex(west_idx, new_west_vertex)
 			mesh_tool.set_vertex(middle_idx, new_middle_vertex)
 
-	for surface_idx in range(mesh.get_surface_count()):
-		mesh.surface_remove(surface_idx)
+#	for surface_idx in range(mesh.get_surface_count()):
+#		mesh.surface_remove(surface_idx)
 
-	mesh_tool.commit_to_surface(self.mesh)
+#	mesh_tool.commit_to_surface(self.mesh)
+	self.mesh = mesh_tool.commit()
 	
 	terrain_shape.shape = mesh.create_trimesh_shape()
 	
