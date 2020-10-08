@@ -3,6 +3,7 @@ tool
 extends MeshInstance
 
 export(ShaderMaterial) var terrain_material = null
+export(AtlasTexture) var tile_set_atlas_texture
 
 onready var terrain_model = get_node("TerrainModel")
 onready var terrain_utils = get_node("TerrainUtils")
@@ -34,7 +35,7 @@ func _ready():
 
 	terrain_shape.shape = mesh.create_trimesh_shape()
 
-	terrain_model.connect("terrain_changed", self, "_terrain_changed")
+	terrain_model.connect("terrain_changed", self, "_terrain_changed_timed")
 	connect("input_event", self, "_on_area_input_event")
 
 func _on_area_input_event(camera, event, click_pos, click_normal, shape_idx):
@@ -102,8 +103,8 @@ func _generate_vertex_array():
 	var north_corner_idx = _get_vertex_idx(0, 0, Corner.NORTH)
 	var south_corner_idx = _get_vertex_idx(dim, dim, Corner.SOUTH)
 	
-	uvs[north_corner_idx] = Vector2(1, 1)
-	uvs[south_corner_idx] = Vector2(1, 1)
+#	uvs[north_corner_idx] = Vector2(1, 1)
+#	uvs[south_corner_idx] = Vector2(1, 1)
 	
 	
 	var i = 0
@@ -218,6 +219,16 @@ func _vector2_with_height(vector, height):
 func _get_height_with_vector2(vector):
 	return terrain_model.get_vertex_height(vector.x, vector.y)
 	
+func _terrain_changed_timed(height_map):
+	var start_time = OS.get_ticks_msec()
+	
+	_terrain_changed(height_map)
+	
+	var end_time = OS.get_ticks_msec()
+	var elapsed_time = end_time - start_time
+	
+	print("Terrain recalculation took " + str(elapsed_time) + "ms")
+
 func _terrain_changed(height_map):
 #	print("_terrain_changed called, modifying terrain")
 #	terrain_model.print_map()
@@ -258,10 +269,10 @@ func _terrain_changed(height_map):
 #			terrain_utils.get_vertex_id_from_pos(x, y)
 			
 #			print(middle_idx)
-			print(north_idx)
-			print(south_idx)
-			print(east_idx)
-			print(west_idx)
+#			print(north_idx)
+#			print(south_idx)
+#			print(east_idx)
+#			print(west_idx)
 
 			mesh_tool.set_vertex(north_idx, new_north_vertex)
 			mesh_tool.set_vertex(south_idx, new_south_vertex)
@@ -269,11 +280,11 @@ func _terrain_changed(height_map):
 			mesh_tool.set_vertex(west_idx, new_west_vertex)
 			mesh_tool.set_vertex(middle_idx, new_middle_vertex)
 
-#	for surface_idx in range(mesh.get_surface_count()):
-#		mesh.surface_remove(surface_idx)
+	for surface_idx in range(mesh.get_surface_count()):
+		mesh.surface_remove(surface_idx)
 
-#	mesh_tool.commit_to_surface(self.mesh)
-	self.mesh = mesh_tool.commit()
+	mesh_tool.commit_to_surface(self.mesh)
+	#self.mesh = mesh_tool.commit()
 	
 	terrain_shape.shape = mesh.create_trimesh_shape()
 	

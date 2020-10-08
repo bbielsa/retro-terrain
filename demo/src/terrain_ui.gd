@@ -18,16 +18,24 @@ func _update_gui(camera, mouse_pos, vertex_pos):
 
 func _modify_terrain(camera, event, mouse_pos, vertex_pos):
 	var button = event.button_index
+	var pressed = event.pressed
+	
+	if not pressed:
+		return
 	
 	if button == BUTTON_LEFT:
+		print("Moving terrain up")
 		terrain_controller.deform(vertex_pos.x, vertex_pos.y, 1)
 	elif button == BUTTON_RIGHT:
+		print("Moving terrain down")
 		terrain_controller.deform(vertex_pos.x, vertex_pos.y, -1)
 
 func _on_input_terrain(camera, event, mouse_pos, mouse_normal, shape_idx, vertex_pos):
-	print("type ", event)
+	if not (event is InputEventMouseMotion):
+		print("type ", event)
 	
 	if event is InputEventMouseButton:
+		print(event)
 		_modify_terrain(camera, event, mouse_pos, vertex_pos)
 	elif event is InputEventMouseMotion:
 		_update_gui(camera, mouse_pos, vertex_pos)

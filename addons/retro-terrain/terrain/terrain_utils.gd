@@ -46,8 +46,8 @@ func get_middle_vertex_height(x, y):
 	var height_midpoint = (max_tile_height + min_tile_height) / 2.0
 	var raised_vertices = get_raised_vertices(x, y)
 
-	if raised_vertices != 0:
-		print("raised vertices ", raised_vertices, " (", x, ", ", y, ")")
+#	if raised_vertices != 0:
+#		print("raised vertices ", raised_vertices, " (", x, ", ", y, ")")
 
 	if raised_vertices == 1:
 		height_midpoint = min_tile_height
