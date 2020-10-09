@@ -151,18 +151,6 @@ func _generate_vertex_array():
 			uv2s[i + 4] = outer
 			
 			i += 5
-			
-#	for y in range(height):
-#		for x in range(width):
-#			vertices[i] = Vector3(x, 0, y)
-#			uv2s[i] = outer
-#			i += 1
-#
-#	for y in range(height_tiles):
-#		for x in range(width_tiles):
-#			vertices[i] = Vector3(x + 0.5, 0, y + 0.5)
-#			uv2s[i] = inner
-#			i += 1
 
 	vertex_array = vertices
 	uv2_array = uv2s
