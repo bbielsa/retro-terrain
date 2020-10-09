@@ -31,7 +31,7 @@ transform = Transform( 2, 0, 0, 0, 1, 0, 0, 0, 2, 0, 0, 0 )
 visible = false
 cell_size = Vector3( 2, 1, 2 )
 data = {
-"cells": PoolIntArray( 1, 1, 0, 10, 2, 0, 4, 4, 0, 12, 9, 0, 3, 10, 0, 2, 13, 0, 16, 13, 0, 7, 14, 0 )
+"cells": PoolIntArray( 1, 1, 1073741824, 10, 2, 0, 4, 4, 0, 12, 9, 0, 3, 10, 0, 2, 13, 0, 16, 13, 0, 7, 14, 0 )
 }
 __meta__ = {
 "_editor_clip_": 0
@@ -90,6 +90,7 @@ custom_fonts/font = SubResource( 2 )
 text = "0"
 
 [node name="VertexIndicator" type="TextureRect" parent="UI"]
+visible = false
 margin_left = 1231.0
 margin_top = 692.0
 margin_right = 1243.0

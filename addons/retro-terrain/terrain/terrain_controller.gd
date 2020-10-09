@@ -12,12 +12,13 @@ onready var terrain_body = get_node("TerrainStaticBody")
 
 export(int) var map_size = 96
 
+
 func _ready():
 	terrain_model.connect("terrain_changed", self, "_on_terrain_changed")
 	terrain_body.connect("input_event", self, "_on_terrain_input")
 
 func _on_terrain_input(camera, event, mouse_pos, mouse_normal, shape_idx):
-	print(event)
+#	print(event)
 	var offset = 46
 	var x = round(offset + mouse_pos.x)
 	var y = round(offset + mouse_pos.z)
