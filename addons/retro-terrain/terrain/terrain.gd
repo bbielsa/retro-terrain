@@ -3,7 +3,6 @@ tool
 extends MeshInstance
 
 export(ShaderMaterial) var terrain_material = null
-export(AtlasTexture) var tile_set_atlas_texture
 
 onready var terrain_model = get_node("TerrainModel")
 onready var terrain_utils = get_node("TerrainUtils")
@@ -40,7 +39,11 @@ func _ready():
 
 	mesh_tool = MeshDataTool.new()
 	mesh_tool.create_from_surface(mesh, 0)
-
+	
+	var texture = load("res://demo/assets/texture/texture_atlas.png")
+	texture.flags = 0
+	terrain_material.set_shader_param("texture_atlas", texture)
+	
 	mesh_tool.set_material(terrain_material)
 	mesh_tool.commit_to_surface(mesh)
 
@@ -62,6 +65,32 @@ func _init_vertex_index():
 			vertex_index[y].append([])
 			
 			vertex_index[y][x] = {"corners": [null, null, null, null], "middle": null}
+
+func _get_tile_uvs(tile_idx):
+	var tiles_x = 2
+	var tiles_y = 2
+	
+	var x = tile_idx % tiles_x
+	var y = floor(tile_idx / tiles_y)
+	
+	var tile_w = Vector2(1.0, 0.0)
+	var tile_h = Vector2(0.0, 1.0)
+	var tile_m = Vector2(0.5, 0.5)
+	var origin = Vector2(x, y)
+	
+	var m = origin + tile_m
+	var n = origin
+	var e = origin + tile_w
+	var s = origin + tile_w + tile_h
+	var w = origin + tile_h
+	
+	return [
+		m / tiles_x,
+		n / tiles_x,
+		e / tiles_x,
+		s / tiles_x,
+		w / tiles_x
+	]
 
 func _generate_vertex_array():
 	var width_tiles = terrain_model.map_dimension
@@ -108,7 +137,19 @@ func _generate_vertex_array():
 			uv2s[i + 2] = outer
 			uv2s[i + 3] = outer
 			uv2s[i + 4] = outer
+				
 			
+			var tex_uv = _get_tile_uvs(0)
+			
+			if x > 10 and y > 10 and x < 15 and y < 15:
+				tex_uv = _get_tile_uvs(3)
+			
+			uvs[i] = tex_uv[0]
+			uvs[i + 1] = tex_uv[1]
+			uvs[i + 2] = tex_uv[2]
+			uvs[i + 3] = tex_uv[3]
+			uvs[i + 4] = tex_uv[4]
+
 			i += 5
 
 	vertex_array = vertices
