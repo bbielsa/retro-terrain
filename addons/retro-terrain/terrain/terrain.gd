@@ -63,47 +63,6 @@ func _init_vertex_index():
 			
 			vertex_index[y][x] = {"corners": [null, null, null, null], "middle": null}
 
-func _get_vertex_idx(tile_x, tile_y, corner):
-	if tile_y > 0:
-		var a = 0
-		
-	var width_tiles = terrain_model.map_dimension
-	var height_tiles = terrain_model.map_dimension
-	var width = width_tiles + 1
-	var height = height_tiles + 1
-	
-	var index = 0
-	
-	index += tile_x + corner.x
-	index += width * tile_y + corner.y * width
-	
-	return index
-
-func get_vertex_idx_from_pos(pos):
-	var width_tiles = terrain_model.map_dimension
-	var height_tiles = terrain_model.map_dimension
-	var width = width_tiles + 1
-	var height = height_tiles + 1
-	
-	var index = 0
-	
-	index += pos.x
-	index += width * pos.y
-	
-	return index
-
-func _get_middle_idx(tile_x, tile_y):
-	var width_tiles = terrain_model.map_dimension
-	var height_tiles = terrain_model.map_dimension
-	var width = width_tiles + 1
-	var height = height_tiles + 1
-	
-	# index into the middle vertex region of the vertex array
-	var middle_vertex_index = tile_x + tile_y * width_tiles
-	var index = width * height + middle_vertex_index
-	
-	return index
-
 func _generate_vertex_array():
 	var width_tiles = terrain_model.map_dimension
 	var height_tiles = terrain_model.map_dimension
@@ -237,9 +196,6 @@ func _terrain_changed_timed(height_map):
 	print("Terrain recalculation took " + str(elapsed_time) + "ms")
 
 func _terrain_changed(height_map):
-#	print("_terrain_changed called, modifying terrain")
-#	terrain_model.print_map()
-	
 	var dimension = terrain_model.map_dimension
 	var height = dimension
 	var width = dimension
