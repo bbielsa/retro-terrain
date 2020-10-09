@@ -17,6 +17,8 @@ var index_array
 var uv2_array
 var uv_array
 
+var vertex_index
+
 const Corner = {
 	NORTH = Vector2(0, 0),
 	EAST = Vector2(1, 0),
@@ -24,7 +26,16 @@ const Corner = {
 	SOUTH = Vector2(1, 1)
 }
 
+const Corner3 = {
+	NORTH = Vector3(0, 0, 0),
+	EAST = Vector3(1, 0, 0),
+	WEST = Vector3(0, 0, 1),
+	SOUTH = Vector3(1, 0, 1)	
+}
+
 func _ready():
+	_init_vertex_index()
+	
 	generate_terrain()
 
 	mesh_tool = MeshDataTool.new()
@@ -38,8 +49,19 @@ func _ready():
 	terrain_model.connect("terrain_changed", self, "_terrain_changed_timed")
 	connect("input_event", self, "_on_area_input_event")
 
-func _on_area_input_event(camera, event, click_pos, click_normal, shape_idx):
-	print("Clicked on mesh!")
+func _init_vertex_index():
+	var width_tiles = terrain_model.map_dimension
+	var height_tiles = terrain_model.map_dimension
+	
+	vertex_index = []
+	
+	for y in range(height_tiles):
+		vertex_index.append([])
+		
+		for x in range(width_tiles):
+			vertex_index[y].append([])
+			
+			vertex_index[y][x] = {"corners": [null, null, null, null], "middle": null}
 
 func _get_vertex_idx(tile_x, tile_y, corner):
 	if tile_y > 0:
@@ -89,7 +111,7 @@ func _generate_vertex_array():
 	var height = height_tiles + 1
 	var middle_vertices = width_tiles * height_tiles
 	
-	var vertices_size = width * height + middle_vertices
+	var vertices_size = width * height * 5
 	var vertices = PoolVector3Array()
 	var uv2s = PoolVector2Array()
 	var uvs = PoolVector2Array()
@@ -99,52 +121,49 @@ func _generate_vertex_array():
 	uvs.resize(vertices_size)
 	
 	var dim = terrain_model.map_dimension
-	
-	var north_corner_idx = _get_vertex_idx(0, 0, Corner.NORTH)
-	var south_corner_idx = _get_vertex_idx(dim, dim, Corner.SOUTH)
-	
-#	uvs[north_corner_idx] = Vector2(1, 1)
-#	uvs[south_corner_idx] = Vector2(1, 1)
-	
-	
+
 	var i = 0
 	
 	var outer = Vector2(0, 0)
 	var inner = Vector2(1, 1)
 	
-	for y in range(height):
-		for x in range(width):
-			vertices[i] = Vector3(x, 0, y)
-			uv2s[i] = outer
-			i += 1
-			
 	for y in range(height_tiles):
 		for x in range(width_tiles):
+			vertex_index[y][x]["middle"] = i
+			
+			vertex_index[y][x]["corners"][0] = i + 1
+			vertex_index[y][x]["corners"][1] = i + 2
+			vertex_index[y][x]["corners"][2] = i + 3
+			vertex_index[y][x]["corners"][3] = i + 4
+			
+			var origin = Vector3(x, 0, y)
+			
 			vertices[i] = Vector3(x + 0.5, 0, y + 0.5)
+			vertices[i + 1] = origin + Corner3.NORTH
+			vertices[i + 2] = origin + Corner3.EAST
+			vertices[i + 3] = origin + Corner3.SOUTH
+			vertices[i + 4] = origin + Corner3.WEST
+			
 			uv2s[i] = inner
-			i += 1
-
+			uv2s[i + 1] = outer
+			uv2s[i + 2] = outer
+			uv2s[i + 3] = outer
+			uv2s[i + 4] = outer
+			
+			i += 5
+			
+#	for y in range(height):
+#		for x in range(width):
+#			vertices[i] = Vector3(x, 0, y)
+#			uv2s[i] = outer
+#			i += 1
+#
 #	for y in range(height_tiles):
 #		for x in range(width_tiles):
-#			var north_idx = _get_vertex_idx(x, y, Corner.NORTH)
-#			var south_idx = _get_vertex_idx(x + 1, y + 1, Corner.SOUTH)
-#			var east_idx = _get_vertex_idx(x + 1, y, Corner.EAST)
-#			var west_idx = _get_vertex_idx(x, y + 1, Corner.WEST)
-#			var middle_idx = _get_middle_idx(x, y)
-#
-#			uvs[north_idx] = Corner.SOUTH * Vector2(x, y)
-#			uvs[south_idx] = Corner.NORTH * Vector2(x, y)
-#			uvs[east_idx] = Corner.EAST * Vector2(x, y)
-#			uvs[west_idx] = Corner.WEST * Vector2(x, y)
-#			uvs[middle_idx] = Vector2(0.5, 0.5) * Vector2(x, y)
-#
-#			print(north_idx)
-#			print(south_idx)
-#			print(east_idx)
-#			print(west_idx)
-	
-	
-			
+#			vertices[i] = Vector3(x + 0.5, 0, y + 0.5)
+#			uv2s[i] = inner
+#			i += 1
+
 	vertex_array = vertices
 	uv2_array = uv2s
 	uv_array = uvs
@@ -157,11 +176,11 @@ func _calculate_indices():
 	
 	for y in range(height_tiles):
 		for x in range(width_tiles):
-			var middle_idx = _get_middle_idx(x, y)			
-			var north_idx = _get_vertex_idx(x, y, Corner.NORTH)
-			var south_idx = _get_vertex_idx(x, y, Corner.SOUTH)
-			var east_idx = _get_vertex_idx(x, y, Corner.EAST)
-			var west_idx = _get_vertex_idx(x, y, Corner.WEST)
+			var middle_idx = vertex_index[y][x]["middle"]		
+			var north_idx = vertex_index[y][x]["corners"][0]
+			var east_idx = vertex_index[y][x]["corners"][1]
+			var south_idx = vertex_index[y][x]["corners"][2]
+			var west_idx = vertex_index[y][x]["corners"][3]
 			
 			#
 			# N        E
@@ -259,21 +278,12 @@ func _terrain_changed(height_map):
 			var new_south_vertex = _vector2_with_height(south_vertex, south_height)
 			var new_middle_vertex = _vector2_with_height(middle_vertex, middle_height)
 			
-			var middle_idx = _get_middle_idx(x, y)			
-			var north_idx = _get_vertex_idx(x, y, Corner.NORTH)
-			var south_idx = _get_vertex_idx(x, y, Corner.SOUTH)
-			var east_idx = _get_vertex_idx(x, y, Corner.EAST)
-			var west_idx = _get_vertex_idx(x, y, Corner.WEST)
+			var middle_idx = vertex_index[y][x]["middle"]
+			var north_idx = vertex_index[y][x]["corners"][0]
+			var east_idx = vertex_index[y][x]["corners"][1]
+			var south_idx = vertex_index[y][x]["corners"][2]
+			var west_idx = vertex_index[y][x]["corners"][3]
 			
-			
-#			terrain_utils.get_vertex_id_from_pos(x, y)
-			
-#			print(middle_idx)
-#			print(north_idx)
-#			print(south_idx)
-#			print(east_idx)
-#			print(west_idx)
-
 			mesh_tool.set_vertex(north_idx, new_north_vertex)
 			mesh_tool.set_vertex(south_idx, new_south_vertex)
 			mesh_tool.set_vertex(east_idx, new_east_vertex)
