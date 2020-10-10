@@ -18,14 +18,13 @@ func _ready():
 	terrain_body.connect("input_event", self, "_on_terrain_input")
 
 func _on_terrain_input(camera, event, mouse_pos, mouse_normal, shape_idx):
-#	print(event)
-	var offset = 46
-	var x = round(offset + mouse_pos.x)
-	var y = round(offset + mouse_pos.z)
+	var x = mouse_pos.x
+	var y = mouse_pos.z
+	var scale_x = scale.x
+	var scale_y = scale.z
 
-	var vertex_x = int(x / 2)
-	var vertex_y = int(y / 2)
-
+	var vertex_x = round(x / scale_x) + map_size / 2
+	var vertex_y = round(y / scale_y) + map_size / 2
 	var vertex_pos = Vector2(vertex_x, vertex_y)
 
 	emit_signal("input_terrain_event", camera, event, mouse_pos, mouse_normal, shape_idx, vertex_pos)

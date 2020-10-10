@@ -136,8 +136,7 @@ func _generate_vertex_array():
 			uv2s[i + 1] = outer
 			uv2s[i + 2] = outer
 			uv2s[i + 3] = outer
-			uv2s[i + 4] = outer
-				
+			uv2s[i + 4] = outer	
 			
 			var tex_uv = _get_tile_uvs(0)
 			
