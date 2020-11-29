@@ -3,7 +3,7 @@ tool
 extends Spatial
 
 
-onready var terrain_model = get_node("../TerrainModel")
+onready var terrain_model = get_node("../../../TerrainModel")
 
 func _ready():
 	print(terrain_model)

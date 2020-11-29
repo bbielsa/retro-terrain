@@ -1,6 +1,7 @@
-[gd_scene load_steps=10 format=2]
+[gd_scene load_steps=11 format=2]
 
 [ext_resource path="res://demo/src/world.gd" type="Script" id=1]
+[ext_resource path="res://demo/src/camera/camera_controller.gd" type="Script" id=2]
 [ext_resource path="res://addons/retro-terrain/scene/terrain.tscn" type="PackedScene" id=3]
 [ext_resource path="res://demo/assets/font/PressStart2P.ttf" type="DynamicFontData" id=4]
 [ext_resource path="res://demo/assets/sprite/ball.png" type="Texture" id=5]
@@ -31,7 +32,7 @@ transform = Transform( 2, 0, 0, 0, 1, 0, 0, 0, 2, 0, 0, 0 )
 visible = false
 cell_size = Vector3( 2, 1, 2 )
 data = {
-"cells": PoolIntArray( 1, 1, 1073741824, 10, 2, 0, 4, 4, 0, 12, 9, 0, 3, 10, 0, 2, 13, 0, 16, 13, 0, 7, 14, 0 )
+"cells": PoolIntArray( 1, 1, 0, 10, 2, 0, 4, 4, 0, 12, 9, 0, 3, 10, 0, 2, 13, 0, 16, 13, 0, 7, 14, 0 )
 }
 __meta__ = {
 "_editor_clip_": 0
@@ -45,13 +46,13 @@ shadow_enabled = true
 directional_shadow_max_distance = 200.0
 
 [node name="Camera" type="Camera" parent="."]
-transform = Transform( 0.707107, -0.454519, 0.541675, 0, 0.766045, 0.642787, -0.707107, -0.454519, 0.541675, -2.48177, 20, -0.105188 )
+transform = Transform( 0.707107, -0.454519, 0.541675, 0, 0.766045, 0.642787, -0.707107, -0.454519, 0.541675, 24, 20, 24 )
 environment = SubResource( 1 )
 projection = 1
 size = 48.0
+script = ExtResource( 2 )
 
 [node name="Terrain" parent="." instance=ExtResource( 3 )]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 50, 0, 50 )
 
 [node name="UI" type="Control" parent="."]
 margin_right = 40.0
@@ -102,7 +103,7 @@ __meta__ = {
 }
 
 [node name="RigidBody" type="RigidBody" parent="."]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -34.5187, 7.5, -34.2841 )
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 16.747, 12.013, 11.0315 )
 
 [node name="MeshInstance" type="MeshInstance" parent="RigidBody"]
 mesh = SubResource( 3 )
