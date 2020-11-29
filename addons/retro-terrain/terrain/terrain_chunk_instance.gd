@@ -4,12 +4,20 @@ extends MeshInstance
 
 export(ShaderMaterial) var terrain_material = null
 
-onready var terrain_model = get_node("TerrainModel")
+onready var terrain_controller = get_node("../../")
+onready var terrain_model = get_node("../../TerrainModel")
 onready var terrain_utils = get_node("TerrainUtils")
 onready var terrain_shape = get_node("../TerrainCollisionShape")
 
+onready var terrain_chunk = get_node("..")
+
+onready var chunk_size = terrain_controller.chunk_size
+onready var chunk_id = terrain_chunk.chunk_id
+
 var terrain_shader
 var mesh_tool
+
+var height_map
 
 var vertex_array
 var index_array
@@ -33,10 +41,18 @@ const Corner3 = {
 }
 
 func _ready():
+	_init_mesh()
 	_init_vertex_index()
 	
 	generate_terrain()
+	_update_terrain()
 
+	connect("input_event", self, "_on_area_input_event")
+
+	terrain_controller.connect("chunk_changed", self, "_chunk_changed")
+	print("connected")
+
+func _init_mesh():
 	mesh_tool = MeshDataTool.new()
 	mesh_tool.create_from_surface(mesh, 0)
 	
@@ -48,9 +64,6 @@ func _ready():
 	mesh_tool.commit_to_surface(mesh)
 
 	terrain_shape.shape = mesh.create_trimesh_shape()
-
-	terrain_model.connect("terrain_changed", self, "_terrain_changed_timed")
-	connect("input_event", self, "_on_area_input_event")
 
 func _init_vertex_index():
 	var width_tiles = terrain_model.map_dimension
@@ -93,13 +106,13 @@ func _get_tile_uvs(tile_idx):
 	]
 
 func _generate_vertex_array():
-	var width_tiles = terrain_model.map_dimension
-	var height_tiles = terrain_model.map_dimension
+	var width_tiles = 8
+	var height_tiles = 8
 	var width = width_tiles + 1
 	var height = height_tiles + 1
 	var middle_vertices = width_tiles * height_tiles
 	
-	var vertices_size = width * height * 5
+	var vertices_size = width_tiles * height_tiles * 5
 	var vertices = PoolVector3Array()
 	var uv2s = PoolVector2Array()
 	var uvs = PoolVector2Array()
@@ -108,7 +121,7 @@ func _generate_vertex_array():
 	uv2s.resize(vertices_size)
 	uvs.resize(vertices_size)
 	
-	var dim = terrain_model.map_dimension
+	var dim = 8
 
 	var i = 0
 	
@@ -138,10 +151,8 @@ func _generate_vertex_array():
 			uv2s[i + 3] = outer
 			uv2s[i + 4] = outer	
 			
-			var tex_uv = _get_tile_uvs(0)
+			var tex_uv = _get_tile_uvs(2)
 			
-			if x > 10 and y > 10 and x < 15 and y < 15:
-				tex_uv = _get_tile_uvs(3)
 			
 			uvs[i] = tex_uv[0]
 			uvs[i + 1] = tex_uv[1]
@@ -156,8 +167,8 @@ func _generate_vertex_array():
 	uv_array = uvs
 	
 func _calculate_indices():
-	var width_tiles = terrain_model.map_dimension
-	var height_tiles = terrain_model.map_dimension
+	var width_tiles = 8
+	var height_tiles = 8
 	
 	index_array = PoolIntArray()
 	
@@ -223,25 +234,72 @@ func _vector2_with_height(vector, height):
 	return Vector3(vector.x, height / 2.0, vector.y)
 	
 func _get_height_with_vector2(vector):
-	return terrain_model.get_vertex_height(vector.x, vector.y)
+	var chunk_x = chunk_id % 2
+	var chunk_y = floor(chunk_id / 2)
 	
-func _terrain_changed_timed(height_map):
+	var world_x = chunk_x * 8 + vector.x
+	var world_y = chunk_y * 8 + vector.y
+	
+	return terrain_model.get_vertex_height(world_x, world_y)
+
+func _get_middle_vertex_height(x, y):
+	var chunk_x = chunk_id % 2
+	var chunk_y = floor(chunk_id / 2)
+	
+	var world_x = chunk_x * 8 + x
+	var world_y = chunk_y * 8 + y
+	
+	return terrain_utils.get_middle_vertex_height(world_x, world_y)
+
+func _update_terrain_timed():
 	var start_time = OS.get_ticks_msec()
 	
-	_terrain_changed(height_map)
+	_update_terrain()
 	
 	var end_time = OS.get_ticks_msec()
 	var elapsed_time = end_time - start_time
 	
 	print("Terrain recalculation took " + str(elapsed_time) + "ms")
 
-func _terrain_changed(height_map):
-	var dimension = terrain_model.map_dimension
-	var height = dimension
-	var width = dimension
+func _get_chunk_bounds(chunk_x, chunk_y, chunk_size):
+	pass
 
-	for y in range(height):
-		for x in range(width):
+func _chunk_changed(modified_chunks, modified_vertices, height_map):
+	if not chunk_id in modified_chunks:
+		return
+
+	self.height_map = _get_heightmap_for_chunk(chunk_id, height_map)
+	_update_terrain_timed()
+
+func _get_heightmap_for_chunk(chunk_id, height_map):
+	var chunk_x = chunk_id % 2
+	var chunk_y = floor(chunk_id / 2)
+	
+	var start_x = chunk_x * chunk_size
+	var start_y = chunk_x * chunk_size
+	
+	var chunk_heightmap = []
+	
+	var y = 0
+	var x = 0
+	
+	for map_y in range(start_y, start_y + chunk_size + 1):
+		chunk_heightmap.append([])
+		x = 0
+		for map_x in range(start_x, start_x + chunk_size + 1):
+			chunk_heightmap[y].append(height_map[map_y][map_x])
+			x += 1
+		y += 1
+		
+	return chunk_heightmap
+	
+func _update_terrain():
+	var dimension = chunk_size
+	var height = 8
+	var width = 8
+
+	for y in range(0, height):
+		for x in range(0, width):
 			var tile_vertex = Vector2(x, y)
 			
 			var north_vertex = tile_vertex
@@ -254,7 +312,7 @@ func _terrain_changed(height_map):
 			var east_height = _get_height_with_vector2(east_vertex)
 			var west_height = _get_height_with_vector2(west_vertex)
 			var south_height = _get_height_with_vector2(south_vertex)
-			var middle_height = terrain_utils.get_middle_vertex_height(x, y)
+			var middle_height = _get_middle_vertex_height(x, y)
 			
 			var new_north_vertex = _vector2_with_height(north_vertex, north_height)
 			var new_east_vertex = _vector2_with_height(east_vertex, east_height)

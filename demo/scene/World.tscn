@@ -46,7 +46,7 @@ shadow_enabled = true
 directional_shadow_max_distance = 200.0
 
 [node name="Camera" type="Camera" parent="."]
-transform = Transform( 0.707107, -0.454519, 0.541675, 0, 0.766045, 0.642787, -0.707107, -0.454519, 0.541675, 12, 20, 12 )
+transform = Transform( 0.707107, -0.454519, 0.541675, 0, 0.766045, 0.642787, -0.707107, -0.454519, 0.541675, 24, 20, 24 )
 environment = SubResource( 1 )
 projection = 1
 size = 48.0
@@ -103,7 +103,7 @@ __meta__ = {
 }
 
 [node name="RigidBody" type="RigidBody" parent="."]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -8, 12.013, -8 )
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 16.747, 12.013, 11.0315 )
 
 [node name="MeshInstance" type="MeshInstance" parent="RigidBody"]
 mesh = SubResource( 3 )

@@ -4,9 +4,9 @@ extends Spatial
 
 signal terrain_changed(vertex_map)
 
-onready var terrain_controller = get_node("../../..")
-
+onready var terrain_controller = get_node("..")
 onready var map_dimension = terrain_controller.map_size # number of tiles, vertices will be map_dimension + 1
+
 var vertex_height = []
 
 # The maximum height can be from -16 to 16 units
@@ -35,17 +35,26 @@ func get_absolute_vertex_relative(x, y, dx, dy):
 	return abs(get_vertex_relative(x, y, dx, dy))
 
 func deform(x, y, delta_height):
+	var modified_vertices = {}
 	var direction = 1 if delta_height > 0 else -1
 	var times = abs(delta_height)
+	
+	_append_unique_vertex(x, y, modified_vertices)
 	
 	for i in range(times):
 		var height = vertex_height[y][x]
 		vertex_height[y][x] = height + direction
-		normalize_terrain(x, y, direction)
+		normalize_terrain(x, y, direction, modified_vertices)
 	
-	emit_signal("terrain_changed", vertex_height)
+	var unique_modified_vertices = modified_vertices.values()
+	
+	emit_signal("terrain_changed", vertex_height, unique_modified_vertices)
 
-func normalize_terrain(x, y, direction):
+func _append_unique_vertex(x, y, dict):
+	var key = str(x) + "," + str(y)
+	dict[key] = Vector2(x, y)
+
+func normalize_terrain(x, y, direction, modified_vertices):
 # called after some terrain vertex was modified
 # this ensures that the constraints on terrain are held
 # namely: neighboring verticies in cardinal directions
@@ -55,25 +64,29 @@ func normalize_terrain(x, y, direction):
 	if get_absolute_vertex_relative(x, y, 0, -1) > 1:
 		var height = vertex_height[y - 1][x]
 		vertex_height[y - 1][x] = height + direction
-		normalize_terrain(x, y - 1, direction)
+		_append_unique_vertex(x, y - 1, modified_vertices)
+		normalize_terrain(x, y - 1, direction, modified_vertices)
 	
 	# south vertex
 	if get_absolute_vertex_relative(x, y, 0, 1) > 1:
 		var height = vertex_height[y + 1][x]
 		vertex_height[y + 1][x] = height + direction
-		normalize_terrain(x, y + 1, direction)
+		_append_unique_vertex(x, y + 1, modified_vertices)
+		normalize_terrain(x, y + 1, direction, modified_vertices)
 		
 	# east vertex
 	if get_absolute_vertex_relative(x, y, 1, 0) > 1:
 		var height = vertex_height[y][x + 1]
 		vertex_height[y][x + 1] = height + direction
-		normalize_terrain(x + 1, y, direction)
+		_append_unique_vertex(x + 1, y, modified_vertices)
+		normalize_terrain(x + 1, y, direction, modified_vertices)
 		
 	#west vertex
 	if get_absolute_vertex_relative(x, y, -1, 0) > 1:
 		var height = vertex_height[y][x - 1]
 		vertex_height[y][x - 1] = height + direction
-		normalize_terrain(x - 1, y, direction)
+		_append_unique_vertex(x - 1, y, modified_vertices)
+		normalize_terrain(x - 1, y, direction, modified_vertices)
 
 func initialize_vertex_array():
 	for y in range(map_dimension + 1):
