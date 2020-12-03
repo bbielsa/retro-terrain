@@ -55,12 +55,25 @@ func _on_terrain_input(camera, event, mouse_pos, mouse_normal, shape_idx):
 	var scale_x = scale.x
 	var scale_y = scale.z
 
+#	print(event)
+
 	var vertex_x = round(x / scale_x)
 	var vertex_y = round(y / scale_y)
 	var vertex_pos = Vector2(vertex_x, vertex_y)
 	
 #	print("m: " + str(mouse_pos))
 #	print("v: " + str(vertex_pos))
+
+	if not event is InputEventMouseButton:
+		return
+		
+	if event.pressed:
+		return
+
+	var button_index = event.button_index
+	var delta = 1 if button_index == 1 else -1 
+
+	deform(vertex_x, vertex_y, delta)
 
 #	emit_signal("input_terrain_event", camera, event, mouse_pos, mouse_normal, shape_idx, vertex_pos)
 

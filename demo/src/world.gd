@@ -9,7 +9,7 @@ func _ready():
 #	terrain_controller.deform(8, 8, 3)
 
 #	terrain_controller.deform(5, 5, 7)
-	terrain_controller.deform(5, 5, -7)
+	terrain_controller.deform(4, 5, -7)
 	terrain_controller.deform(4, 4, 1)
 	
 #	terrain_controller.deform(23, 23, 1)

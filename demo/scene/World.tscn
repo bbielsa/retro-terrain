@@ -32,7 +32,7 @@ transform = Transform( 2, 0, 0, 0, 1, 0, 0, 0, 2, 0, 0, 0 )
 visible = false
 cell_size = Vector3( 2, 1, 2 )
 data = {
-"cells": PoolIntArray( 1, 1, 0, 10, 2, 0, 4, 4, 0, 12, 9, 0, 3, 10, 0, 2, 13, 0, 16, 13, 0, 7, 14, 0 )
+"cells": PoolIntArray( 1, 1, 0, 10, 2, 0, 4, 4, 0, 12, 9, 0, 3, 10, 0, 2, 13, 0, 16, 13, 0, 7, 14, 1610612736 )
 }
 __meta__ = {
 "_editor_clip_": 0

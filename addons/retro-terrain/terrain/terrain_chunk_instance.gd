@@ -65,6 +65,21 @@ func _init_mesh():
 
 	terrain_shape.shape = mesh.create_trimesh_shape()
 
+func _get_tile_vertex_indices(x, y):
+	var middle_idx = vertex_index[y][x]["middle"]
+	var north_idx = vertex_index[y][x]["corners"][0]
+	var east_idx = vertex_index[y][x]["corners"][1]
+	var south_idx = vertex_index[y][x]["corners"][2]
+	var west_idx = vertex_index[y][x]["corners"][3]
+	
+	return {
+		middle = middle_idx,
+		north = north_idx,
+		east = east_idx,
+		south = south_idx,
+		west = west_idx	
+	}
+
 func _init_vertex_index():
 	var width_tiles = terrain_model.map_dimension
 	var height_tiles = terrain_model.map_dimension
@@ -174,11 +189,13 @@ func _calculate_indices():
 	
 	for y in range(height_tiles):
 		for x in range(width_tiles):
-			var middle_idx = vertex_index[y][x]["middle"]		
-			var north_idx = vertex_index[y][x]["corners"][0]
-			var east_idx = vertex_index[y][x]["corners"][1]
-			var south_idx = vertex_index[y][x]["corners"][2]
-			var west_idx = vertex_index[y][x]["corners"][3]
+			var tile_indices = _get_tile_vertex_indices(x, y)
+			
+			var middle_idx = tile_indices.middle	
+			var north_idx = tile_indices.north
+			var east_idx = tile_indices.east
+			var south_idx = tile_indices.south
+			var west_idx = tile_indices.west
 			
 			#
 			# N        E
@@ -292,7 +309,17 @@ func _get_heightmap_for_chunk(chunk_id, height_map):
 		y += 1
 		
 	return chunk_heightmap
-	
+
+func _set_tile(tile_id, x, y):
+	var tile_uv = _get_tile_uvs(1)
+	var tile_indices = _get_tile_vertex_indices(x, y)
+
+	mesh_tool.set_vertex_uv(tile_indices.north, tile_uv[1])
+	mesh_tool.set_vertex_uv(tile_indices.east, tile_uv[2])
+	mesh_tool.set_vertex_uv(tile_indices.south, tile_uv[3])
+	mesh_tool.set_vertex_uv(tile_indices.west, tile_uv[4])
+	mesh_tool.set_vertex_uv(tile_indices.middle, tile_uv[0])
+
 func _update_terrain():
 	var dimension = chunk_size
 	var height = 8
@@ -320,11 +347,13 @@ func _update_terrain():
 			var new_south_vertex = _vector2_with_height(south_vertex, south_height)
 			var new_middle_vertex = _vector2_with_height(middle_vertex, middle_height)
 			
-			var middle_idx = vertex_index[y][x]["middle"]
-			var north_idx = vertex_index[y][x]["corners"][0]
-			var east_idx = vertex_index[y][x]["corners"][1]
-			var south_idx = vertex_index[y][x]["corners"][2]
-			var west_idx = vertex_index[y][x]["corners"][3]
+			var tile_indices = _get_tile_vertex_indices(x, y)
+			
+			var middle_idx = tile_indices.middle
+			var north_idx = tile_indices.north
+			var east_idx = tile_indices.east
+			var south_idx = tile_indices.south
+			var west_idx = tile_indices.west
 			
 			mesh_tool.set_vertex(north_idx, new_north_vertex)
 			mesh_tool.set_vertex(south_idx, new_south_vertex)
