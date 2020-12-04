@@ -6,7 +6,6 @@
 [node name="Terrain" type="Spatial"]
 transform = Transform( 2, 0, 0, 0, 2, 0, 0, 0, 2, 0, 0, 0 )
 script = ExtResource( 1 )
-map_size = 16
 
 [node name="TerrainModel" type="Spatial" parent="."]
 script = ExtResource( 5 )

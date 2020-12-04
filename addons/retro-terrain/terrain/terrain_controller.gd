@@ -8,13 +8,13 @@ signal input_terrain_event()
 
 onready var terrain_model = get_node("TerrainModel")
 onready var terrain_instance = get_node("TerrainStaticBody/TerrainMeshInstance")
-#onready var terrain_body = get_node("TerrainStaticBody")
 onready var TerrainChunk = preload("res://addons/retro-terrain/scene/terrain_chunk.tscn")
 
-export(int) var map_size
-onready var chunk_size = 8
-onready var chunk_count = map_size / chunk_size
+var chunk_size = 8
+var world_size = 3
+var map_size = chunk_size * world_size
 
+onready var chunks = []
 
 func _ready():
 	terrain_model.connect("terrain_changed", self, "_on_terrain_changed")
@@ -25,9 +25,9 @@ func _ready():
 func _init_map():
 	var id = 0
 	
-	for y in range(2):
-		for x in range(2):
-			_init_chunk(id, x, y, 8)
+	for y in range(world_size):
+		for x in range(world_size):
+			_init_chunk(id, x, y, chunk_size)
 			id += 1
 	
 func _init_chunk(id, chunk_x, chunk_y, chunk_size):
@@ -45,6 +45,8 @@ func _init_chunk(id, chunk_x, chunk_y, chunk_size):
 	add_child(chunk)
 	
 	chunk.translate(origin)
+	
+	chunks.push_back(chunk)
 	
 func _on_chunk_input(camera, event, mouse_pos, mouse_normal, shape_idx):
 	_on_terrain_input(camera, event, mouse_pos, mouse_normal, shape_idx)
@@ -83,7 +85,7 @@ func _on_terrain_changed(height_map, modified_vertices):
 	for vertex in modified_vertices:
 		var chunk_x = floor(vertex.x / chunk_size)
 		var chunk_y = floor(vertex.y / chunk_size)
-		var chunk_id = chunk_y * chunk_count + chunk_x
+		var chunk_id = chunk_y * world_size + chunk_x
 
 		modified_chunks[chunk_id] = true
 
@@ -92,6 +94,24 @@ func _on_terrain_changed(height_map, modified_vertices):
 	print("Updating chunks " + str(unique_modified_chunks))
 	
 	emit_signal("chunk_changed", unique_modified_chunks, modified_vertices, height_map)
+	
+func _get_chunk_id(world_x, world_y):
+	var chunk_x = floor(world_x / chunk_size)
+	var chunk_y = floor(world_y / chunk_size)
+	var chunk_id = chunk_y * world_size + chunk_x
+	
+	return chunk_id
+	
+	
+func set_tile(x, y, tile_id):
+	var chunk_id = _get_chunk_id(x, y)
+	var local_x = x % chunk_size
+	var local_y = y % chunk_size
+	
+	var chunk = chunks[chunk_id]
+	var chunk_mesh = chunk.get_node("TerrainMeshInstance")
+	
+	chunk_mesh._set_tile(tile_id, local_x, local_y)
 	
 func deform(x, y, delta_height):
 	terrain_model.deform(x, y, delta_height)

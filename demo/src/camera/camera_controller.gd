@@ -9,6 +9,15 @@ export var right_action = "ui_right"
 func _ready():
 	pass # Replace with function body.
 
+func _input(event):
+	var angle = PI / 2
+	
+	if Input.is_action_just_pressed("camera_rotate_cw"):
+		rotate_y(angle)
+
+	if Input.is_action_just_pressed("camera_rotate_ccw"):
+		rotate_y(-angle)
+
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
 	var pan_direction = Vector2(0, 0)
