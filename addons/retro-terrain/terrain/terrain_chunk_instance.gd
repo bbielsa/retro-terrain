@@ -25,7 +25,7 @@ var index_array
 var uv2_array
 var uv_array
 
-var vertex_index
+onready var vertex_index = PoolIntArray()
 
 const Corner = {
 	NORTH = Vector2(0, 0),
@@ -65,14 +65,22 @@ func _init_mesh():
 	mesh_tool.set_material(terrain_material)
 	mesh_tool.commit_to_surface(mesh)
 
-	terrain_shape.shape = mesh.create_trimesh_shape()
+	# terrain_shape.shape = mesh.create_trimesh_shape()
+
+func _get_tile_start_index(x, y):
+	var width_tiles = chunk_size
+	var tile_vertices = 5
+	var start_index = (y * width_tiles + x) * tile_vertices
+	
+	return start_index
 
 func _get_tile_vertex_indices(x, y):
-	var middle_idx = vertex_index[y][x]["middle"]
-	var north_idx = vertex_index[y][x]["corners"][0]
-	var east_idx = vertex_index[y][x]["corners"][1]
-	var south_idx = vertex_index[y][x]["corners"][2]
-	var west_idx = vertex_index[y][x]["corners"][3]
+	var start_index = _get_tile_start_index(x, y)
+	var middle_idx = vertex_index[start_index]
+	var north_idx = vertex_index[start_index + 1]
+	var east_idx = vertex_index[start_index + 2]
+	var south_idx = vertex_index[start_index + 3]
+	var west_idx = vertex_index[start_index + 4]
 	
 	return {
 		middle = middle_idx,
@@ -83,19 +91,12 @@ func _get_tile_vertex_indices(x, y):
 	}
 
 func _init_vertex_index():
-	var width_tiles = terrain_model.map_dimension
-	var height_tiles = terrain_model.map_dimension
+	var width_tiles = chunk_size
+	var height_tiles = chunk_size
+	var tile_vertices = 5
 	
-	vertex_index = []
+	vertex_index.resize(width_tiles * height_tiles * tile_vertices)
 	
-	for y in range(height_tiles):
-		vertex_index.append([])
-		
-		for x in range(width_tiles):
-			vertex_index[y].append([])
-			
-			vertex_index[y][x] = {"corners": [null, null, null, null], "middle": null}
-
 func _get_tile_uvs(tile_idx):
 	var tiles_x = 2
 	var tiles_y = 2
@@ -147,12 +148,14 @@ func _generate_vertex_array():
 	
 	for y in range(height_tiles):
 		for x in range(width_tiles):
-			vertex_index[y][x]["middle"] = i
+			var start_index = _get_tile_start_index(x, y)
 			
-			vertex_index[y][x]["corners"][0] = i + 1
-			vertex_index[y][x]["corners"][1] = i + 2
-			vertex_index[y][x]["corners"][2] = i + 3
-			vertex_index[y][x]["corners"][3] = i + 4
+			vertex_index[start_index] = i
+			
+			vertex_index[start_index + 1] = i + 1
+			vertex_index[start_index + 2] = i + 2
+			vertex_index[start_index + 3] = i + 3
+			vertex_index[start_index + 4] = i + 4
 			
 			var origin = Vector3(x, 0, y)
 			
