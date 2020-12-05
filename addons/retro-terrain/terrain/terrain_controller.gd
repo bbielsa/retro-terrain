@@ -11,7 +11,7 @@ onready var terrain_instance = get_node("TerrainStaticBody/TerrainMeshInstance")
 onready var TerrainChunk = preload("res://addons/retro-terrain/scene/terrain_chunk.tscn")
 
 var chunk_size = 8
-var world_size = 3
+var world_size = 16
 var map_size = chunk_size * world_size
 
 onready var chunks = []
