@@ -9,12 +9,22 @@ func _ready():
 	print(terrain_model)
 
 func get_raised_vertices(x, y):
-	var north_height = terrain_model.get_vertex_relative(x, y, 0, 0)
-	var east_height = terrain_model.get_vertex_relative(x, y, 1, 0)
-	var west_height = terrain_model.get_vertex_relative(x, y, 0, 1)
-	var south_height = terrain_model.get_vertex_relative(x, y, 1, 1)
+	var north_height = terrain_model.get_vertex_height(x, y)
+	var east_height = terrain_model.get_vertex_height(x + 1, y)
+	var west_height = terrain_model.get_vertex_height(x, y + 1)
+	var south_height = terrain_model.get_vertex_height(x + 1, y + 1)
+	
+	var raised = 0
+	
+	raised += 1 if north_height != east_height else 0
+	raised += 1 if north_height != west_height else 0
+	raised += 1 if north_height != south_height else 0
+	
+	var sum = raised
 
 	var sum = north_height + east_height + west_height + south_height
+	
+	
 	
 	if sum == 1 || sum == -3:
 		return 1
@@ -46,8 +56,8 @@ func get_middle_vertex_height(x, y):
 	var height_midpoint = (max_tile_height + min_tile_height) / 2.0
 	var raised_vertices = get_raised_vertices(x, y)
 
-#	if raised_vertices != 0:
-#		print("raised vertices ", raised_vertices, " (", x, ", ", y, ")")
+	if raised_vertices != 0:
+		print("raised vertices ", raised_vertices, " (", x, ", ", y, ")")
 
 	if raised_vertices == 1:
 		height_midpoint = min_tile_height

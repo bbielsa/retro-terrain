@@ -11,7 +11,7 @@ onready var terrain_instance = get_node("TerrainStaticBody/TerrainMeshInstance")
 onready var TerrainChunk = preload("res://addons/retro-terrain/scene/terrain_chunk.tscn")
 
 var chunk_size = 8
-var world_size = 16
+var world_size = 4
 var map_size = chunk_size * world_size
 
 onready var chunks = []
@@ -83,11 +83,31 @@ func _on_terrain_changed(height_map, modified_vertices):
 	var modified_chunks = {}
 	
 	for vertex in modified_vertices:
-		var chunk_x = floor(vertex.x / chunk_size)
-		var chunk_y = floor(vertex.y / chunk_size)
+		var chunk_x = floor(vertex.x / (chunk_size + 1))
+		var chunk_y = floor(vertex.y / (chunk_size + 1))
 		var chunk_id = chunk_y * world_size + chunk_x
 
 		modified_chunks[chunk_id] = true
+		
+		chunk_x = floor(vertex.x / chunk_size)
+		chunk_y = floor(vertex.y / chunk_size)
+		chunk_id = chunk_y * world_size + chunk_x
+
+		modified_chunks[chunk_id] = true
+		
+		chunk_x = floor(vertex.x / chunk_size)
+		chunk_y = floor(vertex.y / (chunk_size + 1))
+		chunk_id = chunk_y * world_size + chunk_x
+
+		modified_chunks[chunk_id] = true
+		
+		chunk_x = floor(vertex.x / (chunk_size + 1))
+		chunk_y = floor(vertex.y / chunk_size)
+		chunk_id = chunk_y * world_size + chunk_x
+
+		modified_chunks[chunk_id] = true
+		
+		print(vertex)
 
 	var unique_modified_chunks = modified_chunks.keys()
 	

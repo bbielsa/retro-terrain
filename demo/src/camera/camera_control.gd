@@ -6,10 +6,10 @@ extends Camera
 # User settings:
 # General settings
 export var enabled = true setget set_enabled
-export(int, "Visible", "Hidden", "Caputered, Confined") var mouse_mode = 2
+export(int, "Visible", "Hidden", "Caputered, Confined") var mouse_mode = 0
 
 # Mouslook settings
-export var mouselook = true
+export var mouselook = false
 export (float, 0.0, 1.0) var sensitivity = 0.5
 export (float, 0.0, 0.999, 0.001) var smoothness = 0.5 setget set_smoothness
 export(NodePath) var privot setget set_privot
@@ -31,9 +31,11 @@ export var left_action = "ui_left"
 export var right_action = "ui_right"
 export var up_action = "ui_page_up"
 export var down_action = "ui_page_down"
+export var ccw_action = "camera_rotate_ccw"
+export var cw_action = "camera_rotate_cw"
 
 # Gui settings
-export var use_gui = true
+export var use_gui = false
 export var gui_action = "ui_cancel"
 
 # Intern variables.
@@ -88,6 +90,13 @@ func _input(event):
 			_direction.y = -1
 		elif not Input.is_action_pressed(up_action) and not Input.is_action_pressed(down_action):
 			_direction.y = 0
+			
+		var angle = PI / 2
+			
+		if Input.is_action_just_pressed(ccw_action):
+			rotate_y(-angle)
+		elif Input.is_action_just_pressed(cw_action):
+			rotate_y(angle)
 
 func _process(delta):
 	if privot:

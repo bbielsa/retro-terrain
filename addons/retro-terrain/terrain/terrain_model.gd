@@ -24,6 +24,9 @@ func get_vertex_height(x, y):
 	return vertex_height[y][x]
 
 func get_vertex_relative(x, y, dx, dy):
+	if dx == 0 and dy == 0:
+		return 0
+		
 	var height = vertex_height[y][x]
 	
 	if get_vertex_in_map(x + dx, y + dy):

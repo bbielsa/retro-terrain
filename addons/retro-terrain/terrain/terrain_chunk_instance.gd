@@ -51,8 +51,6 @@ func _ready():
 	connect("input_event", self, "_on_area_input_event")
 
 	terrain_controller.connect("chunk_changed", self, "_chunk_changed")
-	print("connected")
-
 
 func _init_mesh():
 	mesh_tool = MeshDataTool.new()

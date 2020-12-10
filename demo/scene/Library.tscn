@@ -1,0 +1,21 @@
+[gd_scene load_steps=3 format=2]
+
+[ext_resource path="res://demo/assets/mesh/environment/tree.obj" type="ArrayMesh" id=1]
+
+[sub_resource type="ConcavePolygonShape" id=4]
+data = PoolVector3Array( 0.75, 1, -0.75, -0.75, 1, -0.75, 0.75, 1, 0.75, 0.75, 1, 0.75, -0.75, 1, -0.75, -0.75, 1, 0.75, -0.75, 1, 0.75, 0, 5, 0, 0.75, 1, 0.75, 0, 5, 0, -0.75, 1, 0.75, -0.75, 1, -0.75, 0, 5, 0, -0.75, 1, -0.75, 0.75, 1, -0.75, 0.75, 1, -0.75, 0.75, 1, 0.75, 0, 5, 0, 0.25, 0, 0.25, 0.25, 0, -0.25, -0.25, 0, 0.25, -0.25, 0, 0.25, 0.25, 0, -0.25, -0.25, 0, -0.25, -0.25, 2, -0.25, 0.25, 2, -0.25, -0.25, 2, 0.25, -0.25, 2, 0.25, 0.25, 2, -0.25, 0.25, 2, 0.25, 0.25, 2, -0.25, 0.25, 0, -0.25, 0.25, 2, 0.25, 0.25, 2, 0.25, 0.25, 0, -0.25, 0.25, 0, 0.25, 0.25, 2, 0.25, 0.25, 0, 0.25, -0.25, 2, 0.25, -0.25, 2, 0.25, 0.25, 0, 0.25, -0.25, 0, 0.25, -0.25, 2, 0.25, -0.25, 0, 0.25, -0.25, 2, -0.25, -0.25, 2, -0.25, -0.25, 0, 0.25, -0.25, 0, -0.25, 0.25, 0, -0.25, 0.25, 2, -0.25, -0.25, 0, -0.25, -0.25, 0, -0.25, 0.25, 2, -0.25, -0.25, 2, -0.25 )
+
+[node name="Library" type="Spatial"]
+
+[node name="Tree" type="Spatial" parent="."]
+
+[node name="MeshInstance" type="MeshInstance" parent="Tree"]
+transform = Transform( 0.5, 0, 0, 0, 0.5, 0, 0, 0, 0.5, 0, 0, 0 )
+mesh = ExtResource( 1 )
+material/0 = null
+material/1 = null
+
+[node name="StaticBody" type="StaticBody" parent="Tree/MeshInstance"]
+
+[node name="CollisionShape" type="CollisionShape" parent="Tree/MeshInstance/StaticBody"]
+shape = SubResource( 4 )
